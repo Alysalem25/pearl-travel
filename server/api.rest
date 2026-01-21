@@ -1,11 +1,29 @@
 ### Create new user
-POST http://localhost:5000/register
+# POST http://localhost:5000/register
+# Content-Type: application/json
+
+# {
+#   "name": "a1",
+#   "email": "a1@gmail.com",
+#   "password": "aA123456",
+#   "role": "admin",
+#   "number": "12343212211"
+# },
+
+
+# GET http://localhost:5000/categories
+# Content-Type: application/json
+
+
+
+POST http://localhost:5000/categories
 Content-Type: application/json
 
 {
-  "name": "a1",
-  "email": "a1@gmail.com",
-  "password": "aA123456",
-  "role": "admin",
-  "number": "12343212211"
+  "nameEn": "category1",
+  "nameAr": "فئة1",
+  "type": "Incoming",
+  "descriptionEn": "frist category",
+  "descriptionAr": "الفئة الأولى",
+  "isActive": true
 }
