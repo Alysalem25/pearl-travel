@@ -29,12 +29,12 @@ const admin_sidebar = ({ sidebarOpen, setSidebarOpen, active }) => {
             href={`/`}
             className="flex items-center space-x-2 rtl:space-x-reverse"
           >
-            <img
+
+            {/* <img
               src="/Logo.png"
               alt="Logo"
               className="h-10 w-10 object-contain"
-            />
-
+            /> */}
           </Link>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -69,7 +69,7 @@ const admin_sidebar = ({ sidebarOpen, setSidebarOpen, active }) => {
               </li>
               <li onClick={() => setActive("buses")} className={Active === "buses" ? "bg-gray-200 dark:bg-gray-700 rounded-lg" : ""}>
                 <Link
-                  href="/admin-dashboard/buses"
+                  href="/Admindashbord/categories"
                   className="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="38px" fill="#e3e3e3"><path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z" /></svg>

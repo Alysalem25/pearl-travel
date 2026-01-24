@@ -5,7 +5,7 @@ require('dotenv').config();
 const Admin = require('./models/Admin');
 const Program = require('./models/Programs');
 const Category = require('./models/Category'); // Capitalized for consistency
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const upload = require("./middlewares/upload");
 const path = require("path");
@@ -15,12 +15,12 @@ app.use(express.json());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
+  origin: 'http://localhost:3000',
+  credentials: true
 }));
 
 
@@ -30,242 +30,299 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Registration Endpoint
 app.post('/register', async (req, res) => {
-    const { name, email, password, role, number } = req.body;
-    try {
-        let user = await Admin.findOne({ email });
-        if (user) return res.status(400).json({ msg: "User already exists" });
+  const { name, email, password, role, number } = req.body;
+  try {
+    let user = await Admin.findOne({ email });
+    if (user) return res.status(400).json({ msg: "User already exists" });
 
-        // Ensure you have hashing logic in your Admin model 'pre-save' hook 
-        // or hash it here using bcrypt.hash(password, 10)
-        user = new Admin({ name, email, password, role, number });
-        await user.save();
+    // Ensure you have hashing logic in your Admin model 'pre-save' hook 
+    // or hash it here using bcrypt.hash(password, 10)
+    user = new Admin({ name, email, password, role, number });
+    await user.save();
 
-        res.status(201).json({ message: "User registered successfully" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Fixed Stats Endpoint
 app.get('/stats', async (req, res) => {
-    try {
-        const [
-            userCount,
-            activePrograms,
-            inactivePrograms,
-            categoriesCount,
-            egyptPrograms,
-            internationalPrograms
-        ] = await Promise.all([
-            Admin.countDocuments(),
-            Program.countDocuments({ status: "active" }),
-            Program.countDocuments({ status: "inactive" }),
-            Category.countDocuments(),
-            // Pearl Travel offers local tours in Cairo, Alexandria, and Siwa [cite: 26, 54, 237]
-            Program.countDocuments({ type: "Domestic" }),
-            // Outgoing tours include Jordan, Turkey, and Europe [cite: 146, 402, 454]
-            Program.countDocuments({ type: "Outgoing" })
-        ]);
+  try {
+    const [
+      userCount,
+      activePrograms,
+      inactivePrograms,
+      categoriesCount,
+      egyptPrograms,
+      internationalPrograms
+    ] = await Promise.all([
+      Admin.countDocuments(),
+      Program.countDocuments({ status: "active" }),
+      Program.countDocuments({ status: "inactive" }),
+      Category.countDocuments(),
+      // Pearl Travel offers local tours in Cairo, Alexandria, and Siwa [cite: 26, 54, 237]
+      Program.countDocuments({ type: "Domestic" }),
+      // Outgoing tours include Jordan, Turkey, and Europe [cite: 146, 402, 454]
+      Program.countDocuments({ type: "Outgoing" })
+    ]);
 
-        // Wrap results in a 'stats' object to match your frontend code
-        res.json({
-            stats: {
-                userCount,
-                activePrograms,
-                totalPrograms: activePrograms + inactivePrograms,
-                categoriesCount,
-                egyptPrograms,
-                internationalPrograms
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    // Wrap results in a 'stats' object to match your frontend code
+    res.json({
+      stats: {
+        userCount,
+        activePrograms,
+        totalPrograms: activePrograms + inactivePrograms,
+        categoriesCount,
+        egyptPrograms,
+        internationalPrograms
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
 // all categories endpoints
 
 // Get all categories
-app.get('/categories', async (req, res) => {
+{
+  app.get('/categories', async (req, res) => {
     try {
-        const categories = await Category.find();
-        res.json(categories);
+      const categories = await Category.find();
+      res.json(categories);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+      res.status(500).json({ error: err.message });
     }
-});
+  });
 
-// add a new category
+  // add a new category
 app.post('/categories', async (req, res) => {
-    const { nameEn, nameAr , type , descriptionEn, descriptionAr } = req.body;
-    try {
-        const newCategory = new Category({ nameEn, nameAr, type, descriptionEn, descriptionAr });
-        await newCategory.save();
-        res.status(201).json(newCategory);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+  if (!req.body) {
+    return res.status(400).json({ error: "Request body is missing" });
+  }
 
+  const {
+    nameEn,
+    nameAr,
+    type,
+    descriptionEn,
+    descriptionAr,
+    isActive
+  } = req.body;
 
-
-// programs endpoints
-
-// Helper function to normalize image paths (handle both old full paths and new filenames)
-const normalizeImagePath = (img) => {
-    if (!img) return img;
-    // If it's already just a filename, return it
-    if (!img.startsWith('/')) return img;
-    // If it's a full path, extract just the filename
-    return img.split('/').pop();
-};
-
-// Get all programs
-app.get('/programs', async (req, res) => {
-    try {
-        const programs = await Program.find();
-        // Normalize image paths for backward compatibility
-        const normalizedPrograms = programs.map(program => ({
-            ...program.toObject(),
-            images: program.images ? program.images.map(normalizeImagePath) : []
-        }));
-        res.json(normalizedPrograms);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-//  get program by id
-app.get('/programs/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const program = await Program.findById(id);
-        if (!program) {
-            return res.status(404).json({ error: "Program not found" });
-        }
-        // Normalize image paths for backward compatibility
-        const normalizedProgram = {
-            ...program.toObject(),
-            images: program.images ? program.images.map(normalizeImagePath) : []
-        };
-        res.json(normalizedProgram);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
-
-// Add a new program
-// app.post('/programs', upload.array("images", 10), async (req, res) => {
-//   try {
-//     const images = (req.files || []).map(f => f.filename);
-
-//     const newProgram = new Program({
-//       ...req.body,
-//       images
-//     });
-
-//     await newProgram.save();
-//     res.status(201).json(newProgram);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-app.post('/programs', upload.array("images", 10), async (req, res) => {
   try {
-    const images = (req.files || []).map(f => f.filename);
-
-    const newProgram = new Program({
-      ...req.body,
-      images
+    const category = new Category({
+      nameEn,
+      nameAr,
+      type,
+      descriptionEn,
+      descriptionAr,
+      isActive
     });
 
-    await newProgram.save();
-    res.status(201).json(newProgram);
+    await category.save();
+    res.status(201).json(category);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// add image to existing program
-app.post(
-  "/programs/:id/images",
-  upload.array("images", 10),
-  async (req, res) => {
-    try {
-      const program = await Program.findById(req.params.id);
+ 
+  // edit category 
+app.put('/categories/:id', async (req, res) => {
+  const { nameEn, nameAr, type, isActive } = req.body;
 
-      if (!program) {
-        return res.status(404).json({ message: "Program not found" });
-      }
-
-      const newImages = req.files.map(file => file.filename);
-
-      program.images.push(...newImages);
-      await program.save();
-
-      res.json({
-        message: "Images added successfully",
-        images: program.images
-      });
-
-    } catch (error) {
-      res.status(500).json({
-        message: "Failed to add images",
-        error: error.message
-      });
-    }
-  }
-);
-
-// remove image from existing program
-app.delete("/programs/:id/images", async (req, res) => {
   try {
-    const { image } = req.body;
+    const updatedCategory = await Category.findByIdAndUpdate(
+      req.params.id,
+      { nameEn, nameAr, type, isActive  },
+      { new: true }
+    );
 
-    const program = await Program.findById(req.params.id);
-    if (!program) {
-      return res.status(404).json({ message: "Program not found" });
+    if (!updatedCategory) {
+      return res.status(404).json({ error: 'Category not found' });
     }
 
-    program.images = program.images.filter(img => img !== image);
-    await program.save();
+    res.json(updatedCategory);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    res.json({
-      message: "Image removed",
-      images: program.images
+
+  // delete category
+  app.delete('/categories/:id', async (req, res) => {
+    try {
+      const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+      if (!deletedCategory) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+      res.json({ message: "Category deleted successfully" });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+}
+
+  // programs endpoints
+
+  // Helper function to normalize image paths (handle both old full paths and new filenames)
+  const normalizeImagePath = (img) => {
+    if (!img) return img;
+    // If it's already just a filename, return it
+    if (!img.startsWith('/')) return img;
+    // If it's a full path, extract just the filename
+    return img.split('/').pop();
+  };
+
+  // Get all programs
+  {
+    app.get('/programs', async (req, res) => {
+      try {
+        const programs = await Program.find();
+        // Normalize image paths for backward compatibility
+        const normalizedPrograms = programs.map(program => ({
+          ...program.toObject(),
+          images: program.images ? program.images.map(normalizeImagePath) : []
+        }));
+        res.json(normalizedPrograms);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
     });
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-
-// edit a program
-app.put('/programs/:id', async (req, res) => {
-    const { id } = req.params;
-    const { titleEn, titleAr, category, country, descriptionEn, descriptionAr, durationDays, durationNights, price, status } = req.body;
-    try {
-        const updatedProgram = await Program.findByIdAndUpdate(id, {
-            titleEn,
-            titleAr,
-            descriptionEn,
-            descriptionAr,
-            category,
-            country,
-            durationDays,
-            durationNights,
-            price, status
-        }, { new: true });
-        res.json(updatedProgram);
-    } catch (err) {
+    //  get program by id
+    app.get('/programs/:id', async (req, res) => {
+      const { id } = req.params;
+      try {
+        const program = await Program.findById(id);
+        if (!program) {
+          return res.status(404).json({ error: "Program not found" });
+        }
+        // Normalize image paths for backward compatibility
+        const normalizedProgram = {
+          ...program.toObject(),
+          images: program.images ? program.images.map(normalizeImagePath) : []
+        };
+        res.json(normalizedProgram);
+      } catch (err) {
         res.status(500).json({ error: err.message });
-    }
-});
+      }
+    });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+    // Add a new program
+    app.post('/programs', upload.array("images", 10), async (req, res) => {
+      try {
+        const images = (req.files || []).map(f => f.filename);
+
+        const newProgram = new Program({
+          ...req.body,
+          images
+        });
+
+        await newProgram.save();
+        res.status(201).json(newProgram);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+
+    // add image to existing program
+    app.post(
+      "/programs/:id/images",
+      upload.array("images", 10),
+      async (req, res) => {
+        try {
+          const program = await Program.findById(req.params.id);
+
+          if (!program) {
+            return res.status(404).json({ message: "Program not found" });
+          }
+
+          const newImages = req.files.map(file => file.filename);
+
+          program.images.push(...newImages);
+          await program.save();
+
+          res.json({
+            message: "Images added successfully",
+            images: program.images
+          });
+
+        } catch (error) {
+          res.status(500).json({
+            message: "Failed to add images",
+            error: error.message
+          });
+        }
+      }
+    );
+
+    // remove image from existing program
+    app.delete("/programs/:id/images", async (req, res) => {
+      try {
+        const { image } = req.body;
+
+        const program = await Program.findById(req.params.id);
+        if (!program) {
+          return res.status(404).json({ message: "Program not found" });
+        }
+
+        program.images = program.images.filter(img => img !== image);
+        await program.save();
+
+        res.json({
+          message: "Image removed",
+          images: program.images
+        });
+
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+
+    // edit a program
+    app.put(
+      "/programs/:id",
+      upload.array("images", 10),
+      async (req, res) => {
+        try {
+          const program = await Program.findById(req.params.id)
+          if (!program) return res.status(404).json({ message: "Not found" })
+
+          const newImages = req.files?.map(f => f.filename) || []
+
+          Object.assign(program, req.body)
+
+          if (newImages.length > 0) {
+            program.images.push(...newImages)
+          }
+
+          await program.save()
+          res.json(program)
+        } catch (err) {
+          res.status(500).json({ error: err.message })
+        }
+      }
+    )
+
+    // delete program
+    app.delete("/programs/:id", async (req, res) => {
+      try {
+        const program = await Program.findByIdAndDelete(req.params.id);
+        if (!program) {
+          return res.status(404).json({ message: "Program not found" });
+        }
+        res.json({ message: "Program deleted successfully" });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+  }
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

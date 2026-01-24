@@ -305,6 +305,11 @@ const ProgramsPage = () => {
             alert(error.response?.data?.message || 'Error')
     })
 
+        const deleteMutation = useMutation({
+        mutationFn: (id: string) => axios.delete(`http://localhost:5000/programs/${id}`),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['programs'] })
+    })
+
 
     // ================= HANDLERS =================
     const handleSubmit = (e: React.FormEvent) => {
@@ -373,8 +378,8 @@ const ProgramsPage = () => {
             itineraryAr: p.itineraryAr || '',
             status: p.status
         })
-        setImages([])
-        setPreviewImages([])
+        setImages(p.images)
+        setPreviewImages(p.images.map(img => `http://localhost:5000/uploads/programs/${img}`))
         setShowForm(true)
     }
 
@@ -507,7 +512,7 @@ const ProgramsPage = () => {
                                         <div key={i} className="relative group">
                                             <img
                                                 src={src}
-                                                className="h-28 w-full object-cover rounded border border-gray-600"
+                                                className=" w-full object-cover rounded border border-gray-600"
                                             />
                                             <button
                                                 type="button"
@@ -545,7 +550,17 @@ const ProgramsPage = () => {
                                     </span>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => startEdit(p)} className="bg-yellow-600 px-3 py-1 rounded text-sm hover:bg-yellow-700">Edit</button>
+                                    <button onClick={(e) => {
+                                        e.stopPropagation(); // STOP link navigation
+                                        e.preventDefault(); // STOP link navigation
+                                        startEdit(p)
+                                    }} className="bg-yellow-600 px-3 py-1 rounded text-sm hover:bg-yellow-700">Edit</button>
+                        
+                                    <button onClick={(e) => {
+                                        e.stopPropagation(); // STOP link navigation
+                                        e.preventDefault(); // STOP link navigation
+                                        deleteMutation.mutate(p._id)
+                                    }} className="bg-red-600 px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
                                 </div>
                             </div>
                         ))}
