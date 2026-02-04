@@ -10,6 +10,8 @@ interface Category {
     nameEn: string
     nameAr: string
     type: 'Incoming' | 'outgoing' | 'Domestic' | 'Educational' | 'Corporate'
+    country: string
+    images: string[]
     isActive: boolean
 }
 
@@ -17,11 +19,15 @@ const CategoriesPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [showForm, setShowForm] = useState(false)
     const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+    const [images, setImages] = useState<File[]>([])
+    const [previewImages, setPreviewImages] = useState<string[]>([])
 
     const [formData, setFormData] = useState({
         nameEn: '',
         nameAr: '',
         type: '',
+        country: 'Egypt',
+        images: '',
         isActive: true
     })
 
@@ -58,24 +64,49 @@ const CategoriesPage = () => {
 
 
     // ================= HANDLERS =================
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
 
 
 
 
-        // Object.entries(formData).forEach(([key, value]) => {
-        //     data.append(key, String(value))
-        // })
-    categoryMutation.mutate({
-            nameEn: formData.nameEn,
-            nameAr: formData.nameAr,
-            type: formData.type,
+        try {
+            if (editingCategory) {
+                // If a new image was selected while editing, upload it first
+                if (images.length > 0) {
+                    const imgForm = new FormData();
+                    imgForm.append('images', images[0]);
+                    await axios.post(`http://localhost:5000/categories/${editingCategory._id}/images`, imgForm);
+                }
 
-            isActive: formData.isActive
-        })
+                await axios.put(`http://localhost:5000/categories/${editingCategory._id}`, {
+                    nameEn: formData.nameEn,
+                    nameAr: formData.nameAr,
+                    type: formData.type,
+                    country: formData.country,
+                    isActive: formData.isActive
+                });
 
+                alert('Category updated!');
+            } else {
+                const data = new FormData();
+                data.append('nameEn', formData.nameEn);
+                data.append('nameAr', formData.nameAr);
+                data.append('type', formData.type);
+                data.append('country', formData.country);
+                data.append('isActive', String(formData.isActive));
+                if (images.length > 0) data.append('images', images[0]);
+
+                await axios.post('http://localhost:5000/categories', data);
+                alert('Category added!');
+            }
+
+            queryClient.invalidateQueries({ queryKey: ['categories'] });
+            resetForm();
+        } catch (err: any) {
+            alert(err.response?.data?.error || 'Error');
+        }
     }
 
 
@@ -86,8 +117,12 @@ const CategoriesPage = () => {
             nameEn: '',
             nameAr: '',
             type: '',
+            country: 'Egypt',
+            images: '',
             isActive: true
         })
+        setImages([])
+        setPreviewImages([])
         setEditingCategory(null)
         setShowForm(false)
     }
@@ -98,12 +133,31 @@ const CategoriesPage = () => {
             nameEn: c.nameEn,
             nameAr: c.nameAr,
             type: c.type,
+            country: c.country,
+            images: '',
             isActive: c.isActive
         })
 
+        // show existing images from server
+        setImages([])
+        setPreviewImages((c.images || []).map(img => `http://localhost:5000/uploads/categories/${img}`))
+
         setShowForm(true)
     }
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return
 
+        const file = e.target.files[0]
+        if (!file) return
+
+        setImages([file])
+        setPreviewImages([URL.createObjectURL(file)])
+    }
+
+    const removePreviewImage = (index: number) => {
+        setImages((prev) => prev.filter((_, i) => i !== index))
+        setPreviewImages((prev) => prev.filter((_, i) => i !== index))
+    }
     // ================= UI =================
     return (
         <div className="min-h-screen flex bg-gray-900 text-white">
@@ -150,6 +204,10 @@ const CategoriesPage = () => {
                                     required
                                 />
 
+                                <select className="bg-gray-700 p-2 rounded border border-gray-600" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value as any })}>
+                                    <option value="Egypt">Egypt</option>
+                                    <option value="Albania">Albania</option>
+                                </select>
 
                             </div>
                             <div className="flex items-center gap-4">
@@ -166,6 +224,25 @@ const CategoriesPage = () => {
                                     <option value="Corporate">Corporate</option>
                                 </select>
                             </div>
+                                                    {/* images */}
+                        <input type="file" accept="image/*" onChange={handleImageChange} />
+
+                        {previewImages.length > 0 && (
+                            <div className="grid grid-cols-3 gap-3">
+                                {previewImages.map((src, i) => (
+                                    <div key={i} className="relative">
+                                        <img src={src} className="rounded h-32 object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removePreviewImage(i)}
+                                            className="absolute top-1 right-1 bg-red-600 px-2 text-xs rounded"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                             <div className="flex items-center gap-4">
                                 <label className="flex items-center gap-2">
                                     <input type="radio" checked={formData.isActive === true} onChange={() => setFormData({ ...formData, isActive: true })} /> Active
@@ -178,7 +255,7 @@ const CategoriesPage = () => {
                             <button type="submit" disabled={!formData.type}
                                 className="w-full bg-green-600 py-3 rounded">
                                 {editingCategory ? 'Update Category' : 'Save Category'}
-                            </button> 
+                            </button>
                         </form>
                     </div>
                 )}

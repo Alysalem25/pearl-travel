@@ -34,6 +34,7 @@ const ProgramPage = () => {
                 setError(null);
                 const response = await axios.get(`http://localhost:5000/programs/${params.id}`);
                 setProgram(response.data);
+                console.log(response.data);
             } catch (err) {
                 setError('Failed to load program details');
                 console.error(err);
@@ -140,6 +141,20 @@ const ProgramPage = () => {
                                             <span className="font-semibold">Description:</span>
                                             <span className="text-green-400 font-bold text-lg">${program.descriptionEn}</span>
                                         </div>
+                                         
+                                         <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                                            <span className="font-semibold">days:</span>
+                                            <span className="text-green-400 font-bold text-lg">{program.days.length}</span>
+                                            {
+                                                program.days.map((day: any, index: number) => (
+                                                    <div key={index} className="mt-2 p-4 bg-gray-700 rounded">
+                                                        <h3 className="font-semibold mb-2">Day {index + 1}</h3>
+                                                        <p className="text-gray-300">{day.titleEn}</p>
+                                                        <p className="text-gray-400 mt-1">{day.descriptionEn}</p>   
+                                                    </div>
+                                                ))
+                                            }
+                                            </div>
                                     </div>
                                 </div>
 
@@ -163,6 +178,19 @@ const ProgramPage = () => {
                                             <span className="font-semibold">الوصف</span>
                                             <span className="text-green-400 font-bold text-lg">${program.descriptionAr}</span>
                                         </div>
+                                                 <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                                            <span className="font-semibold">days:</span>
+                                            <span className="text-green-400 font-bold text-lg">{program.days.length}</span>
+                                            {
+                                                program.days.map((day: any, index: number) => (
+                                                    <div key={index} className="mt-2 p-4 bg-gray-700 rounded">
+                                                        <h3 className="font-semibold mb-2">Day {index + 1}</h3>
+                                                        <p className="text-gray-300">{day.titleAr}</p>
+                                                        <p className="text-gray-400 mt-1">{day.descriptionAr}</p>   
+                                                    </div>
+                                                ))
+                                            }
+                                            </div>
                                     </div>
                                 </div>
                             </div>

@@ -292,7 +292,9 @@ export default function About() {
           }`}
         >
           {/* Text */}
-          <motion.div variants={item} className="space-y-6 text-[var(--secondColor)] text-2xl">
+          <motion.div
+           variants={item} 
+           className="space-y-6 text-[var(--secondColor)] text-2xl">
 
             <ol type="1" className="list-decimal list-inside space-y-2">
               {data[lang].points.map((point, i) => (

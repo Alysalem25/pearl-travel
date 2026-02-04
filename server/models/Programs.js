@@ -1,22 +1,57 @@
 const mongoose = require("mongoose");
 
-const ProgramsSchema = new mongoose.Schema({
+const DaySchema = new mongoose.Schema(
+  {
+    dayNumber: { type: Number, required: true },
+
+    titleEn: { type: String, required: true },
+    titleAr: { type: String, required: true },
+
+    descriptionEn: { type: String, required: true },
+    descriptionAr: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const ProgramSchema = new mongoose.Schema(
+  {
     titleEn: { type: String, required: true, trim: true },
     titleAr: { type: String, required: true, trim: true },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-    images: [{ type: String, trim: true }],
-    country: { type: String, required: true, trim: true, enum: ['Egypt','Albania'] },
-    durationDays: { type: Number, required: true },
-    durationNights: { type: Number, required: true },   
-    price: { type: Number, required: true },
-    descriptionEn: { type: String, trim: true },
-    descriptionAr: { type: String, trim: true },
-    itineraryEn: { type: String, trim: true },
-    itineraryAr: { type: String, trim: true },
-    // isActive: { type: Boolean, default: true }
-    status: { type: String, required: true, enum: ['active', 'inactive'], default: 'active' },
-}, {
-    timestamps: true,
-});
 
-module.exports = mongoose.models.Programs || mongoose.model("Programs", ProgramsSchema);
+    descriptionEn: { type: String, required: true },
+    descriptionAr: { type: String, required: true },
+
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+
+    country: {
+      type: String,
+      enum: ["Egypt", "Albania"],
+      default: "Egypt",
+    },
+
+    durationDays: { type: Number, required: true },
+    durationNights: { type: Number, required: true },
+
+    price: { type: Number, required: true },
+
+    images: [{ type: String }], // image URLs or filenames
+
+    days: {
+      type: [DaySchema],
+      validate: v => v.length > 0,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("Program", ProgramSchema);

@@ -47,8 +47,8 @@ export default function ButtonSection() {
           variants={item}
 
         >
-            <a
-                className="button_img1 text-3xl text-white font-bold"
+           <a
+                 className="button_img1 text-3xl text-white font-bold"
                 href="/Egypt"
             >
                 <span className="button_text">
@@ -58,19 +58,18 @@ export default function ButtonSection() {
         </motion.div>
 
         {/* Albania Button */}
-        <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+       <motion.div
+          variants={item}
+
         >
-            <button
-                className="button_img2 text-3xl text-white font-bold"
-                onClick={() => { /* window.location.href = "#contact"; */ }}
+           <a
+                 className="button_img2 text-3xl text-white font-bold"
+                href="/Albania"
             >
                 <span className="button_text">
-                    {isRTL ? "البانيا" : "Albania"}
+                    {isRTL ? "ألبانيا" : "Albania"}
                 </span>
-            </button>
+            </a>
         </motion.div>
 
     </div>

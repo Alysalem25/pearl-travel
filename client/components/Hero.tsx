@@ -9,7 +9,7 @@ import { translations } from "@/data/translations";
 import { Language, getDirection } from "@/lib/language";
 import { getLanguageFromSearchParams } from "@/lib/language";
 
-export default function Hero() {
+export default function  Hero() {
   const [lang, setLang] = useState<Language>("en");
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();

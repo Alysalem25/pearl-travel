@@ -10,7 +10,7 @@ export default function Home() {
     
       <Hero />
       <About />
-      <Bottons />
+      <Bottons />                        
     </main>
   );
 }
