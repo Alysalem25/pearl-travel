@@ -193,7 +193,10 @@ export default function Hero() {
 
   const direction = getDirection(lang);
   const isRTL = lang === "ar";
-
+  const item = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+  };
   return (
     <section
       className="relative min-h-screen flex items-center justify-center overflow-hidden z-10 "
@@ -209,6 +212,11 @@ export default function Hero() {
 
       {/* Content */}
       <motion.h1
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        variants={item}
+
         className={`text-white font-bold text-6xl ${isRTL ? "font-arabic" : ""}`}
       >
         {data[lang][params.id as "Egypt" | "Albania"]}

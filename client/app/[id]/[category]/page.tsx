@@ -23,9 +23,9 @@ interface Category {
 }
 
 const Page = () => {
-  const { id } = useParams<{ id: string }>(); // ✅ صح
+  const {id , category } = useParams<{id:string , category: string }>(); // ✅ صح
   const searchParams = useSearchParams();
-  // alert(id);
+  alert(id + category);
   const [lang, setLang] = useState<Language>("en");
   const [mounted, setMounted] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -36,31 +36,8 @@ const Page = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    if (!id) return; // ✅ مهم
-    getCountryCategory(id);
-  }, [id]);
-
-  const getCountryCategory = async (countryName: string) => {
-    try {
-      const res = await axios.get(
-        `http://localhost:5000/country-category/${countryName}`
-      );
-      console.log("Fetched categories:", res.data);
-      const cats = res.data;
-
-      // ✅ تأمين
-      if (Array.isArray(cats)) {
-        setCategories(cats);
-      } else {
-        setCategories([]); // fallback
-        console.error("categories is not an array", cats);
-      }
-
-    } catch (err) {
-      console.error("Error fetching categories", err);
-      setCategories([]);
-    }
-  };
+    if (!category) return; // ✅ مهم
+  }, [category]);
 
 
   if (!mounted) return null;
@@ -108,9 +85,7 @@ const Page = () => {
 
           {categories.map(cat => (
             <motion.div key={cat._id} variants={item}
-              className="space-y-3 m-8"
-              onClick={()=> window.location.href = `/${id}/${cat.nameEn}`}
-              >
+              className="space-y-3 m-8">
 
 
               {cat.images?.length > 0 && (
