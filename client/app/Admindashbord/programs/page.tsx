@@ -576,9 +576,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import axios from 'axios'
 import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
 
 interface Day {
     dayNumber: number
@@ -645,24 +645,21 @@ export default function ProgramsPage() {
     const { data: categories = [] } = useQuery({
         queryKey: ['categories'],
         queryFn: async () =>
-            (await axios.get('http://localhost:5000/categories')).data,
+            (await api.categories.getAll()).data,
     })
 
     const { data: programs = [] } = useQuery({
         queryKey: ['programs'],
         queryFn: async () =>
-            (await axios.get('http://localhost:5000/programs')).data,
+            (await api.programs.getAll()).data,
     })
 
     // ================= MUTATION =================
     const programMutation = useMutation({
         mutationFn: (payload: FormData) =>
             editingProgram
-                ? axios.put(
-                    `http://localhost:5000/programs/${editingProgram._id}`,
-                    payload
-                )
-                : axios.post('http://localhost:5000/programs', payload),
+                ? api.programs.update(editingProgram._id, payload)
+                : api.programs.create(payload),
 
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['programs'] })
@@ -673,7 +670,7 @@ export default function ProgramsPage() {
 
     const deleteMutation = useMutation({
         mutationFn: (id: string) =>
-            axios.delete(`http://localhost:5000/programs/${id}`),
+            api.programs.delete(id),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ['programs'] }),
     })
@@ -782,6 +779,14 @@ export default function ProgramsPage() {
                 <header className="bg-gray-800 p-4 flex justify-between">
                     <h1 className="text-2xl font-bold">Programs</h1>
                     <button
+                        onClick={() => setSidebarOpen(true)}
+                        className="lg:hidden text-gray-400 hover:text-white"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <button
                         onClick={() => (showForm ? resetForm() : setShowForm(true))}
                         className="bg-blue-600 px-4 py-2 rounded"
                     >
@@ -792,41 +797,46 @@ export default function ProgramsPage() {
                 {showForm && (
                     <form
                         onSubmit={handleSubmit}
-                        className="bg-gray-800 m-6 p-6 rounded space-y-4"
+                        className="flex flex-col bg-gray-800 m-6 p-6 rounded space-y-4"
                     >
                         {/* titles */}
-                        <input
-                            placeholder="Title EN"
-                            className="input"
-                            value={formData.titleEn}
-                            onChange={(e) =>
-                                setFormData({ ...formData, titleEn: e.target.value })
-                            }
-                            required
-                        />
+                        <div className="flex w-full gap-6">
 
-                        <input
-                            placeholder="Title AR"
-                            className="input text-right"
-                            value={formData.titleAr}
-                            onChange={(e) =>
-                                setFormData({ ...formData, titleAr: e.target.value })
-                            }
-                            required
-                        />
+                            <input
+                                placeholder="Title EN"
+                                className="bg-gray-700 w-full input text-left p-2 rounded border border-gray-600"
+                                value={formData.titleEn}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, titleEn: e.target.value })
+                                }
+                                required
+                            />
+
+                            <input
+                                placeholder="العنوان بالعربي"
+                                className="bg-gray-700 w-full input text-right p-2 rounded border border-gray-600"
+                                value={formData.titleAr}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, titleAr: e.target.value })
+                                }
+                                required
+                            />
+                        </div>
                         {/* category & country */}
-                        <select className="bg-gray-700 p-2 rounded border border-gray-600" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
-                            <option value="">Select Category</option>
-                            {categories.map((c: any) => <option key={c._id} value={c._id}>{c.nameEn}</option>)}
-                        </select>
+                        <div className="flex w-full gap-6">
+
+                            <select className="bg-gray-700 w-full p-2 rounded border border-gray-600" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
+                                <option value="">Select Category</option>
+                                {categories.map((c: any) => <option key={c._id} value={c._id}>{c.nameEn}</option>)}
+                            </select>
 
 
-                        <select className="bg-gray-700 p-2 rounded border border-gray-600" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value as any })}>
-                            <option value="Egypt">Egypt</option>
-                            <option value="Albania">Albania</option>
-                        </select>
-
-                        <div className="flex gap-2">
+                            <select className="bg-gray-700 w-full p-2 rounded border border-gray-600" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value as any })}>
+                                <option value="Egypt">Egypt</option>
+                                <option value="Albania">Albania</option>
+                            </select>
+                        </div>
+                        <div className="flex gap-6">
                             <input type="number" placeholder="Days" className="bg-gray-700 p-2 rounded border border-gray-600 w-full" value={formData.durationDays} onChange={e => setFormData({ ...formData, durationDays: parseInt(e.target.value) })} required />
                             <input type="number" placeholder="Nights" className="bg-gray-700 p-2 rounded border border-gray-600 w-full" value={formData.durationNights} onChange={e => setFormData({ ...formData, durationNights: parseInt(e.target.value) })} required />
                         </div>
@@ -837,7 +847,7 @@ export default function ProgramsPage() {
                             className="bg-gray-700 p-2 rounded border border-gray-600 w-full h-20"
                             value={formData.descriptionEn}
                             onChange={e => setFormData({ ...formData, descriptionEn: e.target.value })} />
-                        <textarea placeholder="Description (AR)"
+                        <textarea placeholder="التفاصيل بالعربي"
                             className="bg-gray-700 p-2 rounded border border-gray-600 w-full h-20 text-right"
                             value={formData.descriptionAr} onChange={e => setFormData({ ...formData, descriptionAr: e.target.value })} />
 
@@ -867,40 +877,47 @@ export default function ProgramsPage() {
                         <h3 className="font-bold">Days</h3>
 
                         {days.map((day, i) => (
-                            <div key={i} className="border p-4 rounded space-y-2">
+                            <div key={i} className="border p-4 rounded space-y-2 align-middle">
                                 <h4>Day {day.dayNumber}</h4>
 
-                                <input
-                                    placeholder="Title EN"
-                                    value={day.titleEn}
-                                    onChange={(e) =>
-                                        updateDay(i, 'titleEn', e.target.value)
-                                    }
-                                />
+                                <div className="flex w-full gap-6">
+                                    <input
+                                        placeholder="Title EN"
+                                        value={day.titleEn}
+                                        className="bg-gray-700 w-full input text-left p-2 rounded border border-gray-600"
+                                        onChange={(e) =>
+                                            updateDay(i, 'titleEn', e.target.value)
+                                        }
+                                    />
 
-                                <input
-                                    placeholder="Title AR"
-                                    value={day.titleAr}
-                                    onChange={(e) =>
-                                        updateDay(i, 'titleAr', e.target.value)
-                                    }
-                                />
+                                    <input
+                                        placeholder="العنوان بالعربي"
+                                        value={day.titleAr}
+                                        className="bg-gray-700 w-full input text-right p-2 rounded border border-gray-600"
+                                        onChange={(e) =>
+                                            updateDay(i, 'titleAr', e.target.value)
+                                        }
+                                    />
+                                </div>
+                                <div className="flex w-full flex-col gap-2">
+                                    <textarea
+                                        placeholder="Description EN"
+                                        value={day.descriptionEn}
+                                        className="bg-gray-700  input text-left p-2 rounded border border-gray-600"
+                                        onChange={(e) =>
+                                            updateDay(i, 'descriptionEn', e.target.value)
+                                        }
+                                    />
 
-                                <textarea
-                                    placeholder="Description EN"
-                                    value={day.descriptionEn}
-                                    onChange={(e) =>
-                                        updateDay(i, 'descriptionEn', e.target.value)
-                                    }
-                                />
-
-                                <textarea
-                                    placeholder="Description AR"
-                                    value={day.descriptionAr}
-                                    onChange={(e) =>
-                                        updateDay(i, 'descriptionAr', e.target.value)
-                                    }
-                                />
+                                    <textarea
+                                        placeholder="الوصف بالعربي"
+                                        value={day.descriptionAr}
+                                        className="bg-gray-700 input text-right p-2 rounded border border-gray-600"
+                                        onChange={(e) =>
+                                            updateDay(i, 'descriptionAr', e.target.value)
+                                        }
+                                    />
+                                    </div>
 
                                 <button
                                     type="button"
@@ -922,37 +939,37 @@ export default function ProgramsPage() {
                     </form>
                 )}
 
-                 <div className="m-6 p-6">
-                     <h2 className="text-xl font-bold mb-4">Available Programs ({programs.length})</h2>
-                     <div className="grid grid-cols-1 gap-4">
-                         {programs.map((p: Program) => (
-                             <div key={p._id}
-                                 onClick={() => window.location.href = `/Admindashbord/programs/${p._id}`}
-                                 className="bg-gray-800 p-4 rounded border border-gray-700 flex justify-between items-center hover:border-blue-500">
-                                 <div>
-                                     <h3 className="text-lg font-bold">{p.titleEn} / {p.titleAr}</h3>
-                                     <p className="text-sm text-gray-400">{p.durationDays} Days - {p.country} - ${p.price}</p>
-                                     <span className={`text-xs px-2 py-1 rounded ${p.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
-                                         {p.status}
-                                     </span>
-                                 </div>
-                                 <div className="flex gap-2">
-                                     <button onClick={(e) => {
-                                         e.stopPropagation(); // STOP link navigation
-                                         e.preventDefault(); // STOP link navigation
-                                         startEdit(p)
-                                     }} className="bg-yellow-600 px-3 py-1 rounded text-sm hover:bg-yellow-700">Edit</button>
+                <div className="m-6 p-6">
+                    <h2 className="text-xl font-bold mb-4">Available Programs ({programs.length})</h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        {programs.map((p: Program) => (
+                            <div key={p._id}
+                                onClick={() => window.location.href = `/Admindashbord/programs/${p._id}`}
+                                className="bg-gray-800 p-4 rounded border border-gray-700 flex justify-between items-center hover:border-blue-500">
+                                <div>
+                                    <h3 className="text-lg font-bold">{p.titleEn} / {p.titleAr}</h3>
+                                    <p className="text-sm text-gray-400">{p.durationDays} Days - {p.country} - ${p.price}</p>
+                                    <span className={`text-xs px-2 py-1 rounded ${p.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
+                                        {p.status}
+                                    </span>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button onClick={(e) => {
+                                        e.stopPropagation(); // STOP link navigation
+                                        e.preventDefault(); // STOP link navigation
+                                        startEdit(p)
+                                    }} className="bg-yellow-600 px-3 py-1 rounded text-sm hover:bg-yellow-700">Edit</button>
 
-                                     <button onClick={(e) => {
-                                         e.stopPropagation(); // STOP link navigation
-                                         e.preventDefault(); // STOP link navigation
-                                         deleteMutation.mutate(p._id)
-                                     }} className="bg-red-600 px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
-                                 </div>
-                             </div>
-                         ))}
-                     </div>
-                 </div>
+                                    <button onClick={(e) => {
+                                        e.stopPropagation(); // STOP link navigation
+                                        e.preventDefault(); // STOP link navigation
+                                        deleteMutation.mutate(p._id)
+                                    }} className="bg-red-600 px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     )

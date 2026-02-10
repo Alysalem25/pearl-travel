@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageProvider";
-import Providers from "@/components/Providers"; // 1. Import the new Providers
+import { AuthProvider } from "@/context/AuthContext";
+import Providers from "@/components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pearl Travel - Explore the World", // Updated to match your project
+  title: "Pearl Travel - Explore the World",
   description: "Established in 1985, Pearl Travel is a fully accredited IATA travel agency based in Alexandria.",
 };
 
@@ -29,10 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers> {/* 2. Wrap everything in React Query Providers */}
-          <LanguageProvider>
-            {children}
-          </LanguageProvider>
+        <Providers>
+          <AuthProvider>
+            <LanguageProvider>
+              {children}
+            </LanguageProvider>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

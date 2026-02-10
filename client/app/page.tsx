@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Bottons from "@/components/buttonSection";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/footer";
 export default function Home() {
   return (
     <main className="min-h-screen">
@@ -10,7 +11,8 @@ export default function Home() {
     
       <Hero />
       <About />
-      <Bottons />                        
+      <Bottons /> 
+      <Footer />                       
     </main>
   );
 }

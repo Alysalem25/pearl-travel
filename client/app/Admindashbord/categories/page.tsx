@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import axios from 'axios'
 import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
 
 interface Category {
     _id: string
@@ -36,15 +36,15 @@ const CategoriesPage = () => {
     // ================= FETCH =================
     const { data: categories = [] } = useQuery({
         queryKey: ['categories'],
-        queryFn: async () => (await axios.get('http://localhost:5000/categories')).data
+        queryFn: async () => (await api.categories.getAll()).data
     })
 
     // ================= MUTATION =================
     const categoryMutation = useMutation({
         mutationFn: (payload: typeof formData) =>
             editingCategory
-                ? axios.put(`http://localhost:5000/categories/${editingCategory._id}`, payload)
-                : axios.post('http://localhost:5000/categories', payload),
+                ? api.categories.update(editingCategory._id, payload)
+                : api.categories.create(payload),
 
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['categories'] })
@@ -58,7 +58,7 @@ const CategoriesPage = () => {
 
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => axios.delete(`http://localhost:5000/categories/${id}`),
+        mutationFn: (id: string) => api.categories.delete(id),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] })
     })
 
@@ -67,20 +67,16 @@ const CategoriesPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-
-
-
-
         try {
             if (editingCategory) {
                 // If a new image was selected while editing, upload it first
                 if (images.length > 0) {
                     const imgForm = new FormData();
                     imgForm.append('images', images[0]);
-                    await axios.post(`http://localhost:5000/categories/${editingCategory._id}/images`, imgForm);
+                    await api.categories.addImages(editingCategory._id, imgForm);
                 }
 
-                await axios.put(`http://localhost:5000/categories/${editingCategory._id}`, {
+                await api.categories.update(editingCategory._id, {
                     nameEn: formData.nameEn,
                     nameAr: formData.nameAr,
                     type: formData.type,
@@ -98,7 +94,7 @@ const CategoriesPage = () => {
                 data.append('isActive', String(formData.isActive));
                 if (images.length > 0) data.append('images', images[0]);
 
-                await axios.post('http://localhost:5000/categories', data);
+                await api.categories.create(data);
                 alert('Category added!');
             }
 

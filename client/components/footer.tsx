@@ -72,16 +72,16 @@ export default function Hero() {
     };
 
     const data = {
-        en:{
-            links:[
+        en: {
+            links: [
                 "home",
                 "about",
                 "our team",
                 "hero",
             ]
         },
-        ar:{
-            links:[
+        ar: {
+            links: [
                 "home",
                 "about",
                 "our team",
@@ -92,25 +92,76 @@ export default function Hero() {
 
     return (
         <section
-            className="relative flex items-center bg-black drop-shadow-2xl min-h-72 w-full justify-center overflow-hidden"
             dir={direction}
+            className="relative w-full bg-gradient-to-b from-gray-800 via-gray-700 to-gray-500 text-gray-300"
         >
-                <h3>paral travel</h3>
-                <ol>
-                    {
-                        data[lang].links.map((link ,i)=>
-                           (  <li key={i}>{link}</li>)
-                        )
-                    }
-                </ol>
+            <div className="border-t border-gray-950"></div>
 
-                <footer>
-                    <small>
-                        Copyright © 2023 Football History Archives. All Rights Reserved.
-                    </small>
-                </footer>
+            <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
 
+                {/* About */}
+                <div>
+                    <h3 className="text-red-600 text-2xl font-bold mb-4">
+                        Pearl Travel
+                    </h3>
+                    <p className="text-sm leading-relaxed text-gray-400">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Inventore dolorum, aut reiciendis ipsum impedit, corporis
+                        expedita quae repellat nam amet.
+                    </p>
+                </div>
+
+                {/* Quick Links */}
+                <div>
+                    <h3 className="text-white font-semibold text-lg mb-4">
+                        Quick Links
+                    </h3>
+                    <ul className="space-y-2">
+                        {data[lang].links.map((link, i) => (
+                            <li
+                                key={i}
+                                className="cursor-pointer hover:text-red-500 transition-colors duration-200"
+                            >
+                                {link}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Contact Info */}
+                <div>
+                    <h3 className="text-white font-semibold text-lg mb-4">
+                        Contact Info
+                    </h3>
+                    <ul className="space-y-2 text-sm">
+                        <li>📞 0121226225</li>
+                        <li>✉️ pearl@gmail.com</li>
+                        <li>📍 Alexandria, Egypt</li>
+                    </ul>
+                </div>
+
+                {/* Social */}
+                <div>
+                    <h3 className="text-white font-semibold text-lg mb-4">
+                        Follow Us
+                    </h3>
+                    <div className="flex gap-4">
+                        <a className="hover:text-red-500 transition">Facebook</a>
+                        <a className="hover:text-red-500 transition">Instagram</a>
+                        <a className="hover:text-red-500 transition">Twitter</a>
+                    </div>
+                </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-800"></div>
+
+            {/* Copyright */}
+            <div className="text-center py-6 text-sm text-gray-500">
+                © 2023 Pearl Travel. All Rights Reserved.
+            </div>
         </section>
+
     );
 }
 

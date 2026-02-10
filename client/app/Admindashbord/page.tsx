@@ -9,7 +9,7 @@ export default function AdminDashboard() {
         // It is recommended to uncomment this once your auth logic is ready
         // <ProtectedRoute allowedRoles={["admin"]}>
             <AdminDashboardContent />
-        // </ProtectedRoute>
+       // {/* </ProtectedRoute> */}
     );
 }
 

@@ -1,34 +1,20 @@
-### Create new user
-# POST http://localhost:5000/register
+## Create new user
+# GET  http://localhost:5000/country-category/egypt
 # Content-Type: application/json
 
-# {
-#   "name": "a1",
-#   "email": "a1@gmail.com",
-#   "password": "aA123456",
-#   "role": "admin",
-#   "number": "12343212211"
-# },
 
-
-GET http://localhost:5000/categories
+GET  http://localhost:5000/category/6981fe7ed188377ff3917b6c
 Content-Type: application/json
 
 
-
-GET http://localhost:5000/programs
-Content-Type: application/json
-
-
-
-GET  http://localhost:5000/categories
+POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "nameEn": "category1",
-  "nameAr": "فئة1",
-  "type": "Incoming",
-  "descriptionEn": "frist category",
-  "descriptionAr": "الفئة الأولى",
-  "isActive": true
+  "name": "a2",
+  "email": "a2@gmail.com",
+  "password": "Aa123456",
+  "number": "112322323"
 }
+
+

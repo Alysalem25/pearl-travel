@@ -1,17 +1,20 @@
 "use client";
 
 /**
- * Responsive Navbar component with language switcher and dropdown menu
+ * Responsive Navbar component with language switcher and authentication
  * Supports RTL/LTR layout based on selected language
+ * 
+ * Security: Logout clears all auth data and redirects to home
  */
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { ChevronDown, Menu, X, Globe } from "lucide-react";
+import { ChevronDown, Menu, X, Globe, BarChart3 } from "lucide-react";
 import { translations } from "@/data/translations";
 import { Language, getDirection } from "@/lib/language";
 import { getLanguageFromSearchParams, updateLanguage } from "@/lib/language";
+import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
@@ -23,6 +26,7 @@ export default function Navbar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isAuthenticated, isAdmin } = useAuth();
 
   // Initialize language from URL or localStorage
   useEffect(() => {
@@ -186,41 +190,39 @@ export default function Navbar() {
                 <Globe size={18} />
                 <span>{lang === "en" ? "AR" : "EN"}</span>
               </button>
-              {/* <AnimatePresence>
-                {langDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className={`absolute ${
-                      isRTL ? "left-0" : "right-0"
-                    } top-full mt-2 dark:bg-[var(--mainColor)] text-[var(--secondColor)] backdrop-blur-xl shadow-lg rounded-lg w-32 overflow-hidden`}
-                  >
-                    <button
-                      onClick={() => changeLang("en")}
-                      className={`block w-full px-4 py-2 text-left rtl:text-right hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200 ${
-                        lang === "en"
-                          ? "bg-blue-100 dark:bg-[var(--mainColor)] text-[var(--secondColor)] dark:text-blue-400 font-semibold"
-                          : "text-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      English
-                    </button>
-                    <button
-                      onClick={() => changeLang("ar")}
-                      className={`block w-full px-4 py-2 text-left rtl:text-right hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200 ${
-                        lang === "ar"
-                          ? "bg-blue-100 dark:bg-[var(--mainColor)] text-[var(--secondColor)] dark:text-blue-400 font-semibold"
-                          : "text-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      العربية
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence> */}
             </div>
+
+            {/* Auth Section */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-300 dark:border-gray-700">
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {user?.role === "admin" ? "Admin" : "User"}
+                  </p>
+                </div>
+                
+                {isAdmin() && (
+                  <Link
+                    href={`/Admindashbord?lang=${lang}`}
+                    className="flex items-center gap-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium text-sm"
+                  >
+                    <BarChart3 size={16} />
+                    Dashboard
+                  </Link>
+                )}
+
+              </div>
+            ) : (
+              <Link
+                href={`/login?lang=${lang}`}
+                className="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium shadow-md"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -327,6 +329,51 @@ export default function Navbar() {
                     </button>
                   </div>
                 </div>
+
+                {/* Mobile Auth Section */}
+                {isAuthenticated ? (
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                    <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        {user?.name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {user?.role === "admin" ? "Admin" : "User"}
+                      </p>
+                    </div>
+                    
+                    {isAdmin() && (
+                      <Link
+                        href={`/Admindashbord?lang=${lang}`}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium"
+                      >
+                        <BarChart3 size={16} />
+                        Dashboard
+                      </Link>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        logout();
+                        setOpen(false);
+                        router.push("/");
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 font-medium"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href={`/login?lang=${lang}`}
+                    onClick={() => setOpen(false)}
+                    className="block w-full text-center py-2 px-4 mt-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium"
+                  >
+                    Login
+                  </Link>
+                )}
               </div>
             </motion.div>
           )}

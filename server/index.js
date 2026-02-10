@@ -1,58 +1,121 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors'); // 1. Import cors
-require('dotenv').config();
-const Admin = require('./models/Admin');
-const Program = require('./models/Programs');
-const Category = require('./models/Category'); // Capitalized for consistency
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const upload = require("./middlewares/upload");
-const uploadCategory = require("./middlewares/uploadCategory");
-const path = require("path");
+/**
+ * PRODUCTION-READY SECURITY ARCHITECTURE
+ * Pearl Travel Backend - Express.js + MongoDB + JWT
+ * 
+ * Security Features:
+ * - Helmet.js for HTTP headers protection
+ * - CORS properly configured
+ * - JWT-based authentication with 7-day expiry
+ * - Role-based access control (RBAC)
+ * - Input validation and sanitization
+ * - Password hashing with bcrypt
+ * - Centralized error handling (no stack leaks)
+ * - Protected routes for admin operations
+ */
+// const authRoutes = require("./routes/auth");
+
+const express = require("express");
+const mongoose = require("mongoose");
+const helmet = require("helmet");
+const cors = require("cors");
+const path = require("path"); 
+require("dotenv").config();
+// app.use("/auth", authRoutes);
 
 const app = express();
-app.use(express.json());
+
+// ============================================
+// 🔐 SECURITY MIDDLEWARE
+// ============================================
+
+// Helmet.js - Set security HTTP headers
+// Protects against XSS, Clickjacking, MIME-type sniffing, etc.
+app.use(helmet());
+
+// Parse JSON request bodies
+app.use(express.json({ limit: "10mb" }));
+
+// CORS Configuration - Restrict to frontend origin
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
-
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
-
-
 
 // Serve uploaded images statically
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Images are public resources
+// 
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res) => {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    },
+  })
+);
 
-// Registration Endpoint
-app.post('/register', async (req, res) => {
-  const { name, email, password, role, number } = req.body;
-  try {
-    let user = await Admin.findOne({ email });
-    if (user) return res.status(400).json({ msg: "User already exists" });
+// ============================================
+// 📦 ROUTES IMPORTS
+// ============================================
 
-    // Ensure you have hashing logic in your Admin model 'pre-save' hook 
-    // or hash it here using bcrypt.hash(password, 10)
-    user = new Admin({ name, email, password, role, number });
-    await user.save();
+const authRoutes = require("./routes/authRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+const programRoutes = require("./routes/programRoutes");
 
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// ============================================
+// 🗄️ DATABASE CONNECTION
+// ============================================
 
-// Fixed Stats Endpoint
-app.get('/stats', async (req, res) => {
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✓ MongoDB Connected"))
+  .catch(err => {
+    console.error("✗ MongoDB Connection Error:", err.message);
+    process.exit(1);
+  });
+
+// ============================================
+// 📡 API ROUTES
+// ============================================
+
+/**
+ * Authentication Routes
+ * POST   /auth/register  - Register new user
+ * POST   /auth/login     - Login and get JWT
+ * GET    /auth/me        - Get current user (protected)
+ */
+app.use("/auth", authRoutes);
+
+/**
+ * Category Routes
+ * GET    /categories       - Get all (public)
+ * GET    /categories/:id   - Get one (public)
+ * POST   /categories       - Create (admin only)
+ * PUT    /categories/:id   - Update (admin only)
+ * DELETE /categories/:id   - Delete (admin only)
+ */
+app.use("/categories", categoryRoutes);
+
+/**
+ * Program Routes
+ * GET    /programs       - Get all (public)
+ * GET    /programs/:id   - Get one (public)
+ * POST   /programs       - Create (admin only)
+ * PUT    /programs/:id   - Update (admin only)
+ * DELETE /programs/:id   - Delete (admin only)
+ */
+app.use("/programs", programRoutes);
+
+// ============================================
+// 📊 STATS ENDPOINT (PUBLIC)
+// ============================================
+
+const Admin = require("./models/Users");
+const Program = require("./models/Programs");
+const Category = require("./models/Category");
+
+app.get("/stats", async (req, res, next) => {
   try {
     const [
       userCount,
@@ -66,13 +129,10 @@ app.get('/stats', async (req, res) => {
       Program.countDocuments({ status: "active" }),
       Program.countDocuments({ status: "inactive" }),
       Category.countDocuments(),
-      // Pearl Travel offers local tours in Cairo, Alexandria, and Siwa [cite: 26, 54, 237]
-      Program.countDocuments({ type: "Domestic" }),
-      // Outgoing tours include Jordan, Turkey, and Europe [cite: 146, 402, 454]
-      Program.countDocuments({ type: "Outgoing" })
+      Program.countDocuments({ country: "Egypt" }),
+      Program.countDocuments({ country: "Albania" })
     ]);
 
-    // Wrap results in a 'stats' object to match your frontend code
     res.json({
       stats: {
         userCount,
@@ -84,360 +144,37 @@ app.get('/stats', async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-// all categories endpoints
-{
-  // Get all categories
-app.get('/categories', async (req, res) => {
-  try {
-    const categories = await Category.find();
-    const normalizedCategories = categories.map(category => ({
-      ...category.toObject(),
-      images: category.images ? category.images.map(normalizeImagePath) : []
-    }));
-    res.json(normalizedCategories);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// ============================================
+// ❌ ERROR HANDLING
+// ============================================
 
-  // add a new category
-  app.post('/categories', uploadCategory.array("images", 1)
-    , async (req, res) => {
-      if (!req.body) {
-        return res.status(400).json({ error: "Request body is missing" });
-      }
+const { errorHandler, notFoundHandler } = require("./middlewares/errorHandler");
 
-      const {
-        nameEn,
-        nameAr,
-        type,
-        descriptionEn,
-        descriptionAr,
-        country,
-        isActive
-      } = req.body;
+// 404 handler - must be before error handler
+app.use(notFoundHandler);
 
-      try {
-        const images = (req.files || []).map(f => f.filename);
+// Centralized error handler - must be last
+app.use(errorHandler);
 
-        const category = new Category({
-          nameEn,
-          nameAr,
-          type,
-          descriptionEn,
-          descriptionAr,
-          country,
-          images,
-          isActive
-        });
+// ============================================
+// 🚀 SERVER START
+// ============================================
 
-        await category.save();
-        res.status(201).json(category);
-      } catch (err) {
-        res.status(500).json({ error: err.message });
-      }
-    });
-
-  // add image to existing category
-  app.post(
-    "/categories/:id/images",
-    uploadCategory.array("images", 1),
-    async (req, res) => {
-      try {
-        const category = await Category.findById(req.params.id);
-        if (!category) {
-          return res.status(404).json({ message: "Category not found" });
-        }
-
-        const newImages = (req.files || []).map(f => f.filename);
-
-        if (!category.images) category.images = [];
-        category.images.push(...newImages);
-        await category.save();
-
-        res.json({
-          message: "Image added successfully",
-          images: category.images
-        });
-
-      } catch (err) {
-        res.status(500).json({ message: "Failed to add image", error: err.message });
-      }
-    }
-  );
-
-  // edit category 
-  app.put('/categories/:id', async (req, res) => {
-    const { nameEn, nameAr, type, isActive } = req.body;
-
-    try {
-      const updatedCategory = await Category.findByIdAndUpdate(
-        req.params.id,
-        { nameEn, nameAr, type, isActive },
-        { new: true }
-      );
-
-      if (!updatedCategory) {
-        return res.status(404).json({ error: 'Category not found' });
-      }
-
-      res.json(updatedCategory);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  // delete category
-  app.delete('/categories/:id', async (req, res) => {
-    try {
-      const deletedCategory = await Category.findByIdAndDelete(req.params.id);
-      if (!deletedCategory) {
-        return res.status(404).json({ error: "Category not found" });
-      }
-      res.json({ message: "Category deleted successfully" });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  // get categories by country
-app.get('/country-category/:country', async (req, res) => {
-  const { country } = req.params;
-
-  try {
-    const categories = await Category.find({
-      country,
-      isActive: true
-    });
-
-    const normalizedCategories = categories.map(category => {
-      // Use the first image if present (Category.images is an array)
-      const firstImage = Array.isArray(category.images) && category.images.length > 0
-        ? normalizeImagePath(category.images[0])
-        : null;
-
-      const imageUrl = firstImage
-        ? `${req.protocol}://${req.get('host')}/uploads/categories/${firstImage}`
-        : null;
-
-      return {
-        ...category.toObject(),
-        image: imageUrl
-      };
-    });
-
-    res.json(normalizedCategories);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-
-
-}
-
-// programs endpoints
-
-// Helper function to normalize image paths (handle both old full paths and new filenames)
-const normalizeImagePath = (img) => {
-  if (!img) return img;
-  // If it's already just a filename, return it
-  if (!img.startsWith('/')) return img;
-  // If it's a full path, extract just the filename
-  return img.split('/').pop();
-};
-
-// Get all programs
-{
-  app.get('/programs', async (req, res) => {
-    try {
-      const programs = await Program.find();
-      // Normalize image paths for backward compatibility
-      const normalizedPrograms = programs.map(program => ({
-        ...program.toObject(),
-        images: program.images ? program.images.map(normalizeImagePath) : []
-      }));
-      res.json(normalizedPrograms);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  //  get program by id
-  app.get('/programs/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-      const program = await Program.findById(id);
-      if (!program) {
-        return res.status(404).json({ error: "Program not found" });
-      }
-      // Normalize image paths for backward compatibility
-      const normalizedProgram = {
-        ...program.toObject(),
-        images: program.images ? program.images.map(normalizeImagePath) : []
-      };
-      res.json(normalizedProgram);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-
-
-  // Add a new program
-  // app.post('/programs', upload.array("images", 10), async (req, res) => {
-  //   try {
-  //     const images = (req.files || []).map(f => f.filename);
-
-  //     const newProgram = new Program({
-  //       ...req.body,
-  //       images
-  //     });
-
-  //     await newProgram.save();
-  //     res.status(201).json(newProgram);
-  //   } catch (err) {
-  //     res.status(500).json({ error: err.message });
-  //   }
-  // });
-  app.post(
-    '/programs',
-    upload.array("images", 10),
-    async (req, res) => {
-      try {
-        const images = (req.files || []).map(f => f.filename);
-
-        // 👇 VERY IMPORTANT
-        const days = req.body.days
-          ? JSON.parse(req.body.days)
-          : [];
-
-        const newProgram = new Program({
-          ...req.body,
-          days,
-          images,
-        });
-
-        await newProgram.save();
-        res.status(201).json(newProgram);
-
-      } catch (err) {
-        console.error("CREATE PROGRAM ERROR:", err);
-        res.status(500).json({ error: err.message });
-      }
-    }
-  );
-
-
-  // add image to existing program
-  app.post(
-    "/programs/:id/images",
-    upload.array("images", 10),
-    async (req, res) => {
-      try {
-        const program = await Program.findById(req.params.id);
-
-        if (!program) {
-          return res.status(404).json({ message: "Program not found" });
-        }
-
-        const newImages = req.files.map(file => file.filename);
-
-        program.images.push(...newImages);
-        await program.save();
-
-        res.json({
-          message: "Images added successfully",
-          images: program.images
-        });
-
-      } catch (error) {
-        res.status(500).json({
-          message: "Failed to add images",
-          error: error.message
-        });
-      }
-    }
-  );
-
-  // remove image from existing program
-  app.delete("/programs/:id/images", async (req, res) => {
-    try {
-      const { image } = req.body;
-
-      const program = await Program.findById(req.params.id);
-      if (!program) {
-        return res.status(404).json({ message: "Program not found" });
-      }
-
-      program.images = program.images.filter(img => img !== image);
-      await program.save();
-
-      res.json({
-        message: "Image removed",
-        images: program.images
-      });
-
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-
-  // edit a program
-  app.put(
-    "/programs/:id",
-    upload.array("images", 10),
-    async (req, res) => {
-      try {
-        const program = await Program.findById(req.params.id);
-        if (!program) return res.status(404).json({ message: "Not found" });
-
-        const newImages = req.files?.map(f => f.filename) || [];
-
-        if (req.body.days) {
-          program.days = JSON.parse(req.body.days);
-        }
-
-        Object.assign(program, req.body);
-
-        if (newImages.length > 0) {
-          program.images.push(...newImages);
-        }
-
-        await program.save();
-        res.json(program);
-
-      } catch (err) {
-        console.error("UPDATE PROGRAM ERROR:", err);
-        res.status(500).json({ error: err.message });
-      }
-    }
-  );
-
-
-  // delete program
-  app.delete("/programs/:id", async (req, res) => {
-    try {
-      const program = await Program.findByIdAndDelete(req.params.id);
-      if (!program) {
-        return res.status(404).json({ message: "Program not found" });
-      }
-      res.json({ message: "Program deleted successfully" });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  // get programs by country and category
-  
-
-
-}
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.listen(PORT, () => {
+  console.log(`
+╔════════════════════════════════════════╗
+║  Pearl Travel Backend                   ║
+║  🔐 Security-Hardened Architecture      ║
+║  Port: ${PORT}                            ║
+║  Env: ${process.env.NODE_ENV || "development"}               ║
+╚════════════════════════════════════════╝
+  `);
+});
+
+module.exports = app;

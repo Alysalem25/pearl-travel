@@ -36,19 +36,18 @@ const Page = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    if (!id) return; // ✅ مهم
+    if (!id) return; 
     getCountryCategory(id);
   }, [id]);
 
   const getCountryCategory = async (countryName: string) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/country-category/${countryName}`
+        `http://localhost:5000/categories/country/${countryName}`
       );
       console.log("Fetched categories:", res.data);
       const cats = res.data;
 
-      // ✅ تأمين
       if (Array.isArray(cats)) {
         setCategories(cats);
       } else {
@@ -91,8 +90,8 @@ const Page = () => {
       <motion.div variants={container}
         initial="hidden"
         whileInView="show"
-        // viewport={{ once: true }}
-         >
+      // viewport={{ once: true }}
+      >
 
         <motion.h1 variants={item} className="text-3xl font-bold text-center mt-10 text-black">
           {data[lang].title}
@@ -109,8 +108,8 @@ const Page = () => {
           {categories.map(cat => (
             <motion.div key={cat._id} variants={item}
               className="space-y-3 m-8"
-              onClick={()=> window.location.href = `/${id}/${cat.nameEn}`}
-              >
+              onClick={() => window.location.href = `/${id}/${cat._id}`}
+            >
 
 
               {cat.images?.length > 0 && (
@@ -132,9 +131,9 @@ const Page = () => {
                 "
                   style={{
                     backgroundImage: `
-                  linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.63)),
-                  url(http://localhost:5000/uploads/categories/${cat.images[0]})
-                  `
+    linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.63)),
+    url(http://localhost:5000${cat.images[0]})
+  `
                   }}
                 >
                   <h1 className="text-lg font-bold text-white">
