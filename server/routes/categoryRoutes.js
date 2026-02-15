@@ -14,7 +14,7 @@ const router = express.Router();
  * Used by API to return absolute paths that work in browser
  */
 function normalizeImagePath(imagePath) {
-  return `/uploads/categories/${imagePath}`;  // ✅ FIX: Added leading slash
+  return `/uploads/categories/${imagePath}`; 
 }
 
 /**

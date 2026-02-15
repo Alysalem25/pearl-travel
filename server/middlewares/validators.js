@@ -103,7 +103,9 @@ const handleValidationErrors = (req, res, next) => {
     }, {});
     
     return res.status(400).json({
-      error: "Validation failed",
+      // print the resone of failed validation as text and the details in a separate field for easier client handling 
+
+      error: "Validation failed: " + Object.values(formattedErrors).join(', '),
       details: formattedErrors
     });
   }

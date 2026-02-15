@@ -579,6 +579,7 @@ import React, { useState } from 'react'
 import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 interface Day {
     dayNumber: number
@@ -607,6 +608,14 @@ interface Program {
 }
 
 export default function ProgramsPage() {
+    return (
+        <ProtectedRoute requiredRole="admin">
+            <ProgramsPageContent />
+        </ProtectedRoute>
+    );
+}
+
+function ProgramsPageContent() {
     const queryClient = useQueryClient()
 
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -615,6 +624,7 @@ export default function ProgramsPage() {
 
     const [images, setImages] = useState<File[]>([])
     const [previewImages, setPreviewImages] = useState<string[]>([])
+    const [error, setError] = useState('')
 
     const [days, setDays] = useState<Day[]>([
         {
@@ -666,6 +676,9 @@ export default function ProgramsPage() {
             alert(editingProgram ? 'Program updated ✅' : 'Program added ✅')
             resetForm()
         },
+        onError:(error: any)=>{
+            setError(error.response.data.massage)
+        }
     })
 
     const deleteMutation = useMutation({

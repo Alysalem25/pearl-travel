@@ -23,6 +23,7 @@ import {
   getAuthUser,
   saveAuthData,
   clearAuthData,
+  isTokenExpired,
   AuthUser,
   AuthResponse
 } from "@/lib/auth";
@@ -52,11 +53,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Initialize auth state on mount
    * Checks if user is stored in localStorage
+   * Validates token expiration
    */
   useEffect(() => {
     const storedUser = getAuthUser();
     if (storedUser) {
-      setUser(storedUser);
+      // Check if token has expired
+      if (isTokenExpired()) {
+        clearAuthData();
+        setUser(null);
+      } else {
+        setUser(storedUser);
+      }
     }
     setLoading(false);
   }, []);

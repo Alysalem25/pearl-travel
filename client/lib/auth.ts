@@ -106,3 +106,56 @@ export const getAuthHeader = (): Record<string, string> => {
     Authorization: `Bearer ${token}`
   };
 };
+
+/**
+ * Decode JWT token (client-side only for checking expiration)
+ * Note: This is NOT validated - always validate on server
+ */
+export const decodeToken = (token: string): Record<string, any> | null => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch (err) {
+    return null;
+  }
+};
+
+/**
+ * Check if token is expired
+ * Used for client-side UX optimization
+ * Server-side validation is ALWAYS enforced
+ */
+export const isTokenExpired = (): boolean => {
+  const token = getAuthToken();
+  if (!token) return true;
+
+  const decoded = decodeToken(token);
+  if (!decoded || !decoded.exp) return true;
+
+  // exp is in seconds, current time is in milliseconds
+  const currentTime = Date.now() / 1000;
+  return decoded.exp <= currentTime;
+};
+
+/**
+ * Get time remaining on token (in seconds)
+ * Returns 0 if no token or expired
+ */
+export const getTokenTimeRemaining = (): number => {
+  const token = getAuthToken();
+  if (!token) return 0;
+
+  const decoded = decodeToken(token);
+  if (!decoded || !decoded.exp) return 0;
+
+  const currentTime = Date.now() / 1000;
+  const remaining = decoded.exp - currentTime;
+  return remaining > 0 ? remaining : 0;
+};

@@ -1,12 +1,15 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import AdminSidebar from '@/Components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import apiClient from '@/lib/api'
+import apiClient, { api } from '@/lib/api'
 import { User } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { img, s } from 'framer-motion/client'
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+
 
 interface User {
     _id: string
@@ -15,23 +18,36 @@ interface User {
     password: string
     number?: string
     role: string
+    images: string[]
     inTeam: boolean
 }
 
-const UsersPage = () => {
+export default function UsersPage() {
+    return (
+        <ProtectedRoute requiredRole="admin">
+            <UsersPageContent />
+        </ProtectedRoute>
+    )
+}
+
+const UsersPageContent = () => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false)
     const [searchTerm, setSearchTerm] = React.useState('')
     const [showForm, setShowForm] = React.useState(false)
     const [editingUser, setEditingUser] = React.useState<User | null>(null)
+    const [images, setImages] = useState<File[]>([])
+    const [previewImages, setPreviewImages] = useState<string[]>([])
     const [formData, setFormData] = React.useState({
         name: '',
         email: '',
         password: '',
         number: '',
         role: '',
+        images: '',
         inTeam: false,
     })
-  const { register, isAuthenticated } = useAuth();
+
+    const { register, isAuthenticated } = useAuth();
 
     const queryClient = useQueryClient()
 
@@ -47,31 +63,42 @@ const UsersPage = () => {
 
     // Mutations
     const addUserMutation = useMutation({
-        mutationFn: (newUser: any) => apiClient.post('/auth/register', {
-            ...newUser,
-            //   role: 'driver'
-        }),
+        mutationFn: async (newUser: FormData) => {
+            return api.auth.register(newUser)
+        },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['Users'] as const })
+            queryClient.invalidateQueries({ queryKey: ['users'] })
             resetForm()
-            alert('user added successfully!')
+            alert('User added successfully!')
         },
         onError: (err: any) => {
             console.error(err)
-            alert(err.response?.data?.message || 'Error adding user.')
+            alert(err.response?.data?.error || 'Error adding user.')
         }
     })
 
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
         try {
-            await addUserMutation.mutateAsync(formData)
-        } catch (err: any) {
-            // Error is handled in onError callback
+            const newUser = new FormData()
+            newUser.append('name', formData.name)
+            newUser.append('email', formData.email)
+            newUser.append('password', formData.password)
+            newUser.append('number', formData.number)
+            newUser.append('role', formData.role)
+            newUser.append('inTeam', String(formData.inTeam))
+            if (images.length > 0) newUser.append('images', images[0]);
+            await addUserMutation.mutateAsync(newUser)
+
+            // await api.auth.register(newUser)
+
+        } catch (err: any) { // Error is handled in onError callback 
             console.error(err)
+            alert(err.response?.data?.message || 'Error adding user.')
         }
     }
+
 
     const resetForm = () => {
         setFormData({
@@ -81,13 +108,31 @@ const UsersPage = () => {
             number: '',
             role: '',
             inTeam: false,
+            image: undefined,
         })
+        setPreviewImages(null)
         setEditingUser(null)
         setShowForm(false)
     }
 
-    // Filter drivers based on search term
-    const filteredUsers= drivers.filter((User: User) =>
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return
+
+        const file = e.target.files[0]
+        if (!file) return
+
+        setImages([file])
+        setPreviewImages([URL.createObjectURL(file)])
+    }
+
+    const removePreviewImage = (index: number) => {
+        setImages((prev) => prev.filter((_, i) => i !== index))
+        setPreviewImages((prev) => prev.filter((_, i) => i !== index))
+    }
+
+
+    // Filter usere based on search term
+    const filteredUsers = drivers.filter((User: User) =>
         User.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         User.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (User.number || '').toLowerCase().includes(searchTerm.toLowerCase())
@@ -96,7 +141,7 @@ const UsersPage = () => {
 
     const deleteUser = async (user_id: string) => {
         try {
-            await apiClient.delete(`/deleteUser/${user_id}`);
+            await apiClient.delete(`/auth/deleteUser/${user_id}`);
             queryClient.invalidateQueries({ queryKey: ['users'] as const });
             alert('User deleted successfully!');
         } catch (error) {
@@ -190,7 +235,7 @@ const UsersPage = () => {
                                     onChange={e => setFormData({ ...formData, number: e.target.value })}
                                     className="border p-2 rounded bg-gray-700 text-white"
                                 />
-                           {/* role option */}
+                                {/* role option */}
                                 <select
                                     required
                                     value={formData.role}
@@ -212,6 +257,30 @@ const UsersPage = () => {
                                     />
                                     In Team
                                 </label>
+
+                                {/* image upload */}
+                                <div className="mt-2">
+                                    <label className="block text-gray-400 mb-1">Profile Image</label>
+                                    <input type="file" accept="image/*" onChange={handleImageChange} />
+
+
+                                    {previewImages && (
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {previewImages.map((src, i) => (
+                                                <div key={i} className="relative">
+                                                    <img src={src} className="rounded h-32 object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removePreviewImage(i)}
+                                                        className="absolute top-1 right-1 bg-red-600 px-2 text-xs rounded"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="flex gap-4">
@@ -248,15 +317,23 @@ const UsersPage = () => {
                                 {filteredUsers.map((user: User) => (
                                     <div key={user._id} className="border border-gray-700 p-4 rounded hover:bg-gray-800 transition">
                                         <div className="flex items-start justify-between">
+                                            <img
+                                                src={user.images
+                                                    ? `http://localhost:5000${user.images[0]}`
+                                                    : '/default-profile.png'}
+
+                                                alt={user.name}
+                                                className="h-16 w-16 rounded-full object-cover mr-4"
+                                            />
                                             <div className="flex-1">
                                                 <h3 className="text-xl font-semibold text-white">{user.name}</h3>
                                                 <div className="mt-2 space-y-1">
                                                     <p className="text-gray-400 text-sm">
                                                         <span className="font-semibold">Email:</span> {user.email}
                                                     </p>
-                                                    <p className="text-gray-400 text-sm">
+                                                    {/* <p className="text-gray-400 text-sm">
                                                         <span className="font-semibold">License Number:</span> {user.licenseNumber || '-'}
-                                                    </p>
+                                                    </p> */}
                                                     {user.number && (
                                                         <p className="text-gray-400 text-sm">
                                                             <span className="font-semibold">Number:</span> {user.number}
@@ -282,4 +359,4 @@ const UsersPage = () => {
     )
 }
 
-export default UsersPage
+// export default UsersPage

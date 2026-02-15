@@ -1,10 +1,18 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
-const User = require("../models/Users");
-const { validateRegister, validateLogin, handleValidationErrors } = require("../middlewares/validators");
+const path = require("path");
+const uploadUser = require("../middlewares/uploadUser");
 const authMiddleware = require("../middlewares/authMiddleware");
+const authorize = require("../middlewares/authorizeMiddleware");
+const { validateRegister, validateLogin, handleValidationErrors } = require("../middlewares/validators");
+const User = require("../models/Users");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
+
+
+function normalizeImagePath(filename) {
+  return `/uploads/users/${filename}`;
+}
 
 /**
  * POST /auth/register
@@ -18,11 +26,13 @@ const router = express.Router();
  */
 router.post(
   "/register",
+  // Run multer first to populate req.body and req.files for validation
+  uploadUser.array("images", 1),
   validateRegister,
   handleValidationErrors,
   async (req, res, next) => {
     try {
-      const { name, email, password, number, role = "admin" } = req.body;
+      const { name, email, password, number, role, inTeam } = req.body;
 
       // Check if user already exists
       const existingUser = await User.findOne({ email });
@@ -32,14 +42,18 @@ router.post(
         });
       }
 
-      // Create new user (password hashed in pre-save hook)
+      const images = (req.files || []).map(f => f.filename);
       const user = new User({
         name,
         email,
         password,
         number,
-        role
+        role,
+        inTeam,
+        images
       });
+
+
 
       await user.save();
 
@@ -52,19 +66,27 @@ router.post(
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE || "7d" }
       );
+      // console.log("Registered user:", {
+      //   id: user._id,
+      //   name: user.name,
+      //   email:user.email,
+      //   image: user.image ? normalizeImagePath(user.image) : null
+      // });
+      
+      const response = {
+        ...user.toObject(),
+        images: user.images.map(normalizeImagePath)
+      };
+
+      console.log(response);
 
       res.status(201).json({
         message: "User registered successfully",
         token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        }
+        user: response
       });
     } catch (err) {
-      next(err); // ✅ مهم جدًا
+      next(err);
     }
   }
 );
@@ -162,8 +184,12 @@ router.get("/users", authMiddleware, async (req, res, next) => {
       return res.status(403).json({ error: "Access denied" });
     }
 
-    const users = await User.find().select("-password");
-    res.json({ users });
+    const users = await User.find({ _id: { $ne: req.user.id } }).select("-password");
+    const normalizedUsers = users.map(user => ({
+      ...user.toObject(),
+      images: user.images ? user.images.map(normalizeImagePath) : []
+    }));
+    res.json({ users: normalizedUsers });
   } catch (err) {
     next(err);
   }

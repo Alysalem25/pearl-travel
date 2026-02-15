@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react'
 import AdminSidebar from '@/components/adminSidebar';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import axios from 'axios'
 
 export default function AdminDashboard() {
     return (
-        // It is recommended to uncomment this once your auth logic is ready
-        // <ProtectedRoute allowedRoles={["admin"]}>
+        <ProtectedRoute requiredRole="admin">
             <AdminDashboardContent />
-       // {/* </ProtectedRoute> */}
+        </ProtectedRoute>
     );
 }
 

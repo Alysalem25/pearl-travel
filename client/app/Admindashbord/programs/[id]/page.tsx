@@ -5,6 +5,7 @@ import axios from 'axios';
 import AdminSidebar from '@/components/adminSidebar';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -20,7 +21,15 @@ interface Program {
     images: string[];
 }
 
-const ProgramPage = () => {
+export default function ProgramPage() {
+    return (
+        <ProtectedRoute requiredRole="admin">
+            <ProgramPageContent />
+        </ProtectedRoute>
+    );
+}
+
+const ProgramPageContent = () => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
     const [program, setProgram] = React.useState<Program | null>(null);
     const [loading, setLoading] = React.useState(true);
@@ -223,4 +232,3 @@ const ProgramPage = () => {
     );
 };
 
-export default ProgramPage;

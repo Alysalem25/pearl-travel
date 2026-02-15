@@ -32,7 +32,9 @@ const UserSchema = new mongoose.Schema(
     inTeam:{
       type: Boolean,
       default:false,
-    }
+    },
+    images: [String], // array of image filenames
+
   },
   { timestamps: true }
 );

@@ -3,18 +3,22 @@
 # Content-Type: application/json
 
 
-GET  http://localhost:5000/category/6981fe7ed188377ff3917b6c
-Content-Type: application/json
+# GET  http://localhost:5000/category/6981fe7ed188377ff3917b6c
+# Content-Type: application/json
 
 
 POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "name": "a2",
-  "email": "a2@gmail.com",
+  "name": "aly3",
+  "email": "aly3@gmail.com",
   "password": "Aa123456",
-  "number": "112322323"
+  "number": "43225234",
+  "role":"admin",
+  "images": [
+    "https://res.cloudinary.com/dzj6l8n0v/image/upload/v1700000000/pearl-travel/user-avatars/default-avatar.png"
+  ]
 }
 
 

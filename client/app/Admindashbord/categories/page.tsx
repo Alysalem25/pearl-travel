@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 interface Category {
     _id: string
@@ -15,13 +16,21 @@ interface Category {
     isActive: boolean
 }
 
-const CategoriesPage = () => {
+export default function CategoriesPage() {
+    return (
+        <ProtectedRoute requiredRole="admin">
+            <CategoriesPageContent />
+        </ProtectedRoute>
+    );
+}
+
+const CategoriesPageContent = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [showForm, setShowForm] = useState(false)
     const [editingCategory, setEditingCategory] = useState<Category | null>(null)
     const [images, setImages] = useState<File[]>([])
     const [previewImages, setPreviewImages] = useState<string[]>([])
-
+    const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         nameEn: '',
         nameAr: '',
@@ -101,12 +110,10 @@ const CategoriesPage = () => {
             queryClient.invalidateQueries({ queryKey: ['categories'] });
             resetForm();
         } catch (err: any) {
-            alert(err.response?.data?.error || 'Error');
+            console.log(err)
+            setError(err.response?.data?.error || 'Error');
         }
     }
-
-
-
 
     const resetForm = () => {
         setFormData({
@@ -181,6 +188,12 @@ const CategoriesPage = () => {
                 {showForm && (
                     <div className="bg-gray-800 m-6 p-6 rounded-lg">
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* error massage */}
+                            {error && (
+                                <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded">
+                                    {error}
+                                </div>
+                            )}
 
                             {/* TEXT INPUTS (UNCHANGED) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -288,4 +301,3 @@ const CategoriesPage = () => {
     )
 }
 
-export default CategoriesPage
