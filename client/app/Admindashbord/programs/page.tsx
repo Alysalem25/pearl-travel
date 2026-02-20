@@ -676,7 +676,7 @@ function ProgramsPageContent() {
             alert(editingProgram ? 'Program updated ✅' : 'Program added ✅')
             resetForm()
         },
-        onError:(error: any)=>{
+        onError: (error: any) => {
             setError(error.response.data.massage)
         }
     })
@@ -781,7 +781,7 @@ function ProgramsPageContent() {
 
     // ================= UI =================
     return (
-        <div className="min-h-screen flex bg-gray-900 text-white">
+        <div className="min-h-screen flex bg-white text-black">
             <AdminSidebar
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
@@ -789,7 +789,7 @@ function ProgramsPageContent() {
             />
 
             <div className="flex-1">
-                <header className="bg-gray-800 p-4 flex justify-between">
+                <header className="bg-white p-4 flex justify-between">
                     <h1 className="text-2xl font-bold">Programs</h1>
                     <button
                         onClick={() => setSidebarOpen(true)}
@@ -806,18 +806,19 @@ function ProgramsPageContent() {
                         {showForm ? 'Cancel' : 'Add Program'}
                     </button>
                 </header>
+                <hr />
 
                 {showForm && (
                     <form
                         onSubmit={handleSubmit}
-                        className="flex flex-col bg-gray-800 m-6 p-6 rounded space-y-4"
+                        className="flex flex-col bg-gray-300 m-6 p-6 rounded space-y-4"
                     >
                         {/* titles */}
                         <div className="flex w-full gap-6">
 
                             <input
                                 placeholder="Title EN"
-                                className="bg-gray-700 w-full input text-left p-2 rounded border border-gray-600"
+                                className="bg-white w-full input text-left p-2 rounded border border-gray-600"
                                 value={formData.titleEn}
                                 onChange={(e) =>
                                     setFormData({ ...formData, titleEn: e.target.value })
@@ -827,7 +828,7 @@ function ProgramsPageContent() {
 
                             <input
                                 placeholder="العنوان بالعربي"
-                                className="bg-gray-700 w-full input text-right p-2 rounded border border-gray-600"
+                                className="bg-white w-full input text-right p-2 rounded border border-gray-600"
                                 value={formData.titleAr}
                                 onChange={(e) =>
                                     setFormData({ ...formData, titleAr: e.target.value })
@@ -838,30 +839,36 @@ function ProgramsPageContent() {
                         {/* category & country */}
                         <div className="flex w-full gap-6">
 
-                            <select className="bg-gray-700 w-full p-2 rounded border border-gray-600" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
+                            <select className="bg-white w-full p-2 rounded border border-gray-600" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
                                 <option value="">Select Category</option>
                                 {categories.map((c: any) => <option key={c._id} value={c._id}>{c.nameEn}</option>)}
                             </select>
 
 
-                            <select className="bg-gray-700 w-full p-2 rounded border border-gray-600" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value as any })}>
+                            <select className="bg-white w-full p-2 rounded border border-gray-600" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value as any })}>
                                 <option value="Egypt">Egypt</option>
                                 <option value="Albania">Albania</option>
                             </select>
                         </div>
                         <div className="flex gap-6">
-                            <input type="number" placeholder="Days" className="bg-gray-700 p-2 rounded border border-gray-600 w-full" value={formData.durationDays} onChange={e => setFormData({ ...formData, durationDays: parseInt(e.target.value) })} required />
-                            <input type="number" placeholder="Nights" className="bg-gray-700 p-2 rounded border border-gray-600 w-full" value={formData.durationNights} onChange={e => setFormData({ ...formData, durationNights: parseInt(e.target.value) })} required />
+                            <label className=" gap-6 w-full">
+                                Duration days
+                                <input type="number" placeholder="Days"  className="bg-white p-2 rounded border border-gray-600 w-full" value={formData.durationDays} onChange={e => setFormData({ ...formData, durationDays: parseInt(e.target.value) })} required />
+                            </label>
+                            <label className=" gap-2 w-full">
+                                Duration nights
+                                <input type="number" placeholder="Nights" className="bg-white p-2 rounded border border-gray-600 w-full" value={formData.durationNights} onChange={e => setFormData({ ...formData, durationNights: parseInt(e.target.value) })} required />
+                            </label>
                         </div>
 
-                        <input type="number" placeholder="Price" className="bg-gray-700 p-2 rounded border border-gray-600" value={formData.price} onChange={e => setFormData({ ...formData, price: parseInt(e.target.value) })} required />
+                        {/* <input type="number" placeholder="Price" className="bg-white p-2 rounded border border-gray-600" value={formData.price} onChange={e => setFormData({ ...formData, price: parseInt(e.target.value) })} required /> */}
 
                         <textarea placeholder="Description (EN)"
-                            className="bg-gray-700 p-2 rounded border border-gray-600 w-full h-20"
+                            className="bg-white p-2 rounded border border-gray-600 w-full h-20"
                             value={formData.descriptionEn}
                             onChange={e => setFormData({ ...formData, descriptionEn: e.target.value })} />
                         <textarea placeholder="التفاصيل بالعربي"
-                            className="bg-gray-700 p-2 rounded border border-gray-600 w-full h-20 text-right"
+                            className="bg-white p-2 rounded border border-gray-600 w-full h-20 text-right"
                             value={formData.descriptionAr} onChange={e => setFormData({ ...formData, descriptionAr: e.target.value })} />
 
 
@@ -897,7 +904,7 @@ function ProgramsPageContent() {
                                     <input
                                         placeholder="Title EN"
                                         value={day.titleEn}
-                                        className="bg-gray-700 w-full input text-left p-2 rounded border border-gray-600"
+                                        className="bg-white w-full input text-left p-2 rounded border border-gray-600"
                                         onChange={(e) =>
                                             updateDay(i, 'titleEn', e.target.value)
                                         }
@@ -906,7 +913,7 @@ function ProgramsPageContent() {
                                     <input
                                         placeholder="العنوان بالعربي"
                                         value={day.titleAr}
-                                        className="bg-gray-700 w-full input text-right p-2 rounded border border-gray-600"
+                                        className="bg-white w-full input text-right p-2 rounded border border-gray-600"
                                         onChange={(e) =>
                                             updateDay(i, 'titleAr', e.target.value)
                                         }
@@ -916,7 +923,7 @@ function ProgramsPageContent() {
                                     <textarea
                                         placeholder="Description EN"
                                         value={day.descriptionEn}
-                                        className="bg-gray-700  input text-left p-2 rounded border border-gray-600"
+                                        className="bg-white  input text-left p-2 rounded border border-gray-600"
                                         onChange={(e) =>
                                             updateDay(i, 'descriptionEn', e.target.value)
                                         }
@@ -925,12 +932,12 @@ function ProgramsPageContent() {
                                     <textarea
                                         placeholder="الوصف بالعربي"
                                         value={day.descriptionAr}
-                                        className="bg-gray-700 input text-right p-2 rounded border border-gray-600"
+                                        className="bg-white input text-right p-2 rounded border border-gray-600"
                                         onChange={(e) =>
                                             updateDay(i, 'descriptionAr', e.target.value)
                                         }
                                     />
-                                    </div>
+                                </div>
 
                                 <button
                                     type="button"
@@ -952,13 +959,13 @@ function ProgramsPageContent() {
                     </form>
                 )}
 
-                <div className="m-6 p-6">
+                <div className="m-6 p-6 bg-gray-300 rounded">
                     <h2 className="text-xl font-bold mb-4">Available Programs ({programs.length})</h2>
                     <div className="grid grid-cols-1 gap-4">
                         {programs.map((p: Program) => (
                             <div key={p._id}
                                 onClick={() => window.location.href = `/Admindashbord/programs/${p._id}`}
-                                className="bg-gray-800 p-4 rounded border border-gray-700 flex justify-between items-center hover:border-blue-500">
+                                className="bg-gray-800 p-4 text-white    rounded border border-gray-700 flex justify-between items-center hover:border-blue-500">
                                 <div>
                                     <h3 className="text-lg font-bold">{p.titleEn} / {p.titleAr}</h3>
                                     <p className="text-sm text-gray-400">{p.durationDays} Days - {p.country} - ${p.price}</p>

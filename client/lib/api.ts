@@ -11,8 +11,7 @@
  */
 
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios";
-import { getAuthToken, clearAuthData, getAuthHeader } from "./auth";
-import { useRouter } from "next/navigation";
+import { getAuthToken, clearAuthData } from "./auth";
 
 // Create axios instance with base URL
 const apiClient: AxiosInstance = axios.create({
@@ -29,12 +28,10 @@ const apiClient: AxiosInstance = axios.create({
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Add authorization header if token exists
     const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error: AxiosError) => {
@@ -47,10 +44,7 @@ apiClient.interceptors.request.use(
  * Handle authentication errors globally
  */
 apiClient.interceptors.response.use(
-  (response) => {
-    // Return successful responses as-is
-    return response;
-  },
+  (response) => response,
   (error: AxiosError) => {
     // Handle 401 Unauthorized (token expired or invalid)
     if (error.response?.status === 401) {
@@ -58,8 +52,7 @@ apiClient.interceptors.response.use(
 
       // Only redirect in client-side (not during SSR)
       if (typeof window !== "undefined") {
-        const router = useRouter();
-        router.push("/login");
+        window.location.href = "/login";
       }
 
       return Promise.reject({
@@ -71,8 +64,7 @@ apiClient.interceptors.response.use(
     // Handle 403 Forbidden (insufficient permissions)
     if (error.response?.status === 403) {
       if (typeof window !== "undefined") {
-        const router = useRouter();
-        router.push("/");
+        window.location.href = "/";
       }
 
       return Promise.reject({
@@ -126,9 +118,9 @@ export const api = {
    * Authentication endpoints
    */
   auth: {
-    register: (data: FormData) =>
+    register: (data: FormData | { name: string; email: string; password: string; number: string }) =>
       apiClient.post("/auth/register", data, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: data instanceof FormData ? { "Content-Type": "multipart/form-data" } : undefined
       }),
 
     login: (data: { email: string; password: string }) =>
@@ -189,6 +181,20 @@ export const api = {
         headers: { "Content-Type": "multipart/form-data" }
       })
   },
+
+  // countries endpoints
+  countries: {
+    getAll: () => apiClient.get("/countries"),
+    getOne: (id: string) => apiClient.get(`/countries/${id}`),
+    create: (data: FormData) =>
+      apiClient.post("/countries", data, {
+        headers: { "Content-Type": "multipart/form-data" }
+      }),
+    update: (id: string, data: any) =>
+      apiClient.put(`/countries/${id}`, data),
+    delete: (id: string) =>
+      apiClient.delete(`/countries/${id}`)
+  }, 
 
   /**
    * Stats endpoint

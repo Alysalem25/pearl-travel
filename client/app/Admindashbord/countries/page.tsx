@@ -6,58 +6,58 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 
-interface Category {
+interface Country {
     _id: string
     nameEn: string
     nameAr: string
-    type: 'Incoming' | 'outgoing' | 'Domestic' | 'Educational' | 'Corporate'
     country: string
     images: string[]
-    isActive: boolean
+    inhomepage: boolean
 }
 
-export default function CategoriesPage() {
+export default function CountryPage() {
     return (
         <ProtectedRoute requiredRole="admin">
-            <CategoriesPageContent />
+            <CountryPageContent />
         </ProtectedRoute>
     );
 }
 
-const CategoriesPageContent = () => {
+const CountryPageContent = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [showForm, setShowForm] = useState(false)
-    const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+    const [editingCountry, setEditingCountry] = useState<Country | null>(null)
     const [images, setImages] = useState<File[]>([])
     const [previewImages, setPreviewImages] = useState<string[]>([])
     const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         nameEn: '',
         nameAr: '',
-        type: '',
-        country: 'Egypt',
         images: '',
-        isActive: true
+        inhomepage: false
     })
 
     const queryClient = useQueryClient()
 
     // ================= FETCH =================
-    const { data: categories = [] } = useQuery({
-        queryKey: ['categories'],
-        queryFn: async () => (await api.categories.getAll()).data
+    const { data: countries = [] } = useQuery({
+        queryKey: ['countries'],
+        queryFn: async () => (await api.countries.getAll()).data,
+
+
     })
+    console.log(countries)
 
     // ================= MUTATION =================
-    const categoryMutation = useMutation({
+    const countryMutation = useMutation({
         mutationFn: (payload: typeof formData) =>
-            editingCategory
-                ? api.categories.update(editingCategory._id, payload)
-                : api.categories.create(payload),
+            editingCountry
+                ? api.countries.update(editingCountry._id, payload)
+                : api.countries.create(payload),
 
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['categories'] })
-            alert(editingCategory ? 'Category updated!' : 'Category added!')
+            queryClient.invalidateQueries({ queryKey: ['countries'] })
+            alert(editingCountry ? 'Country updated!' : 'Country added!')
             resetForm()
         },
 
@@ -67,47 +67,44 @@ const CategoriesPageContent = () => {
 
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => api.categories.delete(id),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] })
+        mutationFn: (id: string) => api.countries.delete(id),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['countries'] })
     })
 
 
     // ================= HANDLERS =================
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        alert("Submitting form...") // Debugging alert to confirm form submission
 
         try {
-            if (editingCategory) {
+            if (editingCountry) {
                 // If a new image was selected while editing, upload it first
                 if (images.length > 0) {
                     const imgForm = new FormData();
                     imgForm.append('images', images[0]);
-                    await api.categories.addImages(editingCategory._id, imgForm);
+                    await api.countries.addImages(editingCountry._id, imgForm);
                 }
 
-                await api.categories.update(editingCategory._id, {
+                await api.countries.update(editingCountry._id, {
                     nameEn: formData.nameEn,
                     nameAr: formData.nameAr,
-                    type: formData.type,
-                    country: formData.country,
-                    isActive: formData.isActive
+                    inhomepage: formData.inhomepage
                 });
 
-                alert('Category updated!');
+                alert('Country updated!');
             } else {
                 const data = new FormData();
                 data.append('nameEn', formData.nameEn);
                 data.append('nameAr', formData.nameAr);
-                data.append('type', formData.type);
-                data.append('country', formData.country);
-                data.append('isActive', String(formData.isActive));
+                data.append('inhomepage', String(formData.inhomepage));
                 if (images.length > 0) data.append('images', images[0]);
 
-                await api.categories.create(data);
-                alert('Category added!');
+                await api.countries.create(data);
+                alert('Country added!');
             }
 
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
+            queryClient.invalidateQueries({ queryKey: ['countries'] });
             resetForm();
         } catch (err: any) {
             console.log(err)
@@ -119,31 +116,27 @@ const CategoriesPageContent = () => {
         setFormData({
             nameEn: '',
             nameAr: '',
-            type: '',
-            country: 'Egypt',
             images: '',
-            isActive: true
+            inhomepage: false
         })
         setImages([])
         setPreviewImages([])
-        setEditingCategory(null)
+        setEditingCountry(null)
         setShowForm(false)
     }
 
-    const startEdit = (c: Category) => {
-        setEditingCategory(c)
+    const startEdit = (c: Country) => {
+        setEditingCountry(c)
         setFormData({
             nameEn: c.nameEn,
             nameAr: c.nameAr,
-            type: c.type,
-            country: c.country,
             images: '',
-            isActive: c.isActive
+            inhomepage: c.inhomepage
         })
 
         // show existing images from server
         setImages([])
-        setPreviewImages((c.images || []).map(img => `http://localhost:5000/uploads/categories/${img}`))
+        setPreviewImages((c.images || []).map(img => `http://localhost:5000/uploads/countries/${img}`))
 
         setShowForm(true)
     }
@@ -164,11 +157,11 @@ const CategoriesPageContent = () => {
     // ================= UI =================
     return (
         <div className="min-h-screen flex bg-white text-black">
-            <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} active="categories" />
+            <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} active="Countries" />
 
             <div className="flex-1">
                 <header className="bg-white p-4 flex justify-between">
-                    <h1 className="text-2xl font-bold">Category Management</h1>
+                    <h1 className="text-2xl font-bold">Country Management</h1>
                     <button
                         onClick={() => setSidebarOpen(true)}
                         className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mr-4"
@@ -181,10 +174,12 @@ const CategoriesPageContent = () => {
                         onClick={() => showForm ? resetForm() : setShowForm(true)}
                         className="bg-blue-600 px-4 py-2 mx-4 rounded"
                     >
-                        {showForm ? 'Cancel' : 'Add Program'}
+                        {showForm ? 'Cancel' : 'Add Country'}
                     </button>
                 </header>
-                <hr className="border-gray-300" />
+
+                    <hr className="border-gray-300" />
+
                 {showForm && (
                     <div className="bg-gray-200 m-6 p-6 rounded-lg">
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -213,25 +208,6 @@ const CategoriesPageContent = () => {
                                     required
                                 />
 
-                                <select className="bg-white p-2 rounded border border-gray-600" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value as any })}>
-                                    <option value="Egypt">Egypt</option>
-                                    <option value="Albania">Albania</option>
-                                </select>
-
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <select
-                                    className="bg-white p-2 rounded border border-gray-600"
-                                    value={formData.type}
-                                    onChange={e => setFormData({ ...formData, type: e.target.value })}
-                                >
-                                    <option value="">Select Type</option>
-                                    <option value="Incoming">Incoming</option>
-                                    <option value="outgoing">Outgoing</option>
-                                    <option value="Domestic">Domestic</option>
-                                    <option value="Educational">Educational</option>
-                                    <option value="Corporate">Corporate</option>
-                                </select>
                             </div>
                             {/* images */}
                             <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -254,45 +230,57 @@ const CategoriesPageContent = () => {
                             )}
                             <div className="flex items-center gap-4">
                                 <label className="flex items-center gap-2">
-                                    <input type="radio" checked={formData.isActive === true} onChange={() => setFormData({ ...formData, isActive: true })} /> Active
+                                    <input type="radio" checked={formData.inhomepage === true} onChange={() => setFormData({ ...formData, inhomepage: !formData.inhomepage })} /> Active
                                 </label>
-                                <label className="flex items-center gap-2">
+                                {/* <label className="flex items-center gap-2">
                                     <input type="radio" checked={formData.isActive === false} onChange={() => setFormData({ ...formData, isActive: false })} /> Inactive
-                                </label>
+                                </label> */}
                             </div>
 
-                            <button type="submit" disabled={!formData.type}
+                            <button type="submit" disabled={!formData.nameEn || !formData.nameAr}
                                 className="w-full bg-green-600 py-3 rounded">
-                                {editingCategory ? 'Update Category' : 'Save Category'}
+                                {editingCountry ? 'Update Country' : 'Save Country'}
                             </button>
                         </form>
                     </div>
                 )}
 
-                <div className="m-6 p-6 bg-gray-200 rounded-lg">
-                    <h2 className="text-xl font-bold mb-4">Available Categories ({categories.length})</h2>
-                    <div className="grid grid-cols-1 gap-4">
-                        {categories.map((p: Category) => (
-                            <div key={p._id}
-                                className="bg-gray-800 text-white  p-4 rounded border border-gray-700 flex justify-between items-center hover:border-blue-500">
-                                <div>
-                                    <h3 className="text-lg font-bold">{p.nameEn} / {p.nameAr}</h3>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={(e) => {
-                                        e.stopPropagation(); // STOP link navigation
-                                        e.preventDefault(); // STOP link navigation
-                                        startEdit(p)
-                                    }} className="bg-yellow-600 px-3 py-1 rounded text-sm hover:bg-yellow-700">Edit</button>
+                <div className="m-6 p-6">
+                    <h2 className="text-xl font-bold mb-4">Available Countries ({countries.length})</h2>
+                    <div className="flex flex-wrap gap-6 justify-start"> 
+                        {countries.map((p: Country) => {
+                            const imageUrl =
+                                p.images && p.images.length > 0
+                                    ? `http://localhost:5000${p.images[0]}`
+                                    : '/default-country.jpg'
 
-                                    <button onClick={(e) => {
-                                        e.stopPropagation(); // STOP link navigation
-                                        e.preventDefault(); // STOP link navigation
-                                        deleteMutation.mutate(p._id)
-                                    }} className="bg-red-600 px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
+                            return (
+                                <div key={p._id}>
+                                    <div
+                                        className="dashboard_button_img1 relative h-48 w-full bg-cover bg-center flex items-center flex-col justify-center"
+                                        style={{
+                                            backgroundImage: `
+                        linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.6)),
+                        url(${imageUrl})
+                    `
+                                        }}
+                                    >
+                                        <span className="text-3xl text-white font-bold text-center">
+                                            {p.nameEn} - {p.nameAr}
+                                        </span>
+                                        <div>
+                                            <button onClick={() => startEdit(p)} className=" dashboard_county_button m-2 bg-blue-600 px-3 py-1 text-sm rounded">
+                                                Edit
+                                            </button>
+                                            <button onClick={() => deleteMutation.mutate(p._id)} className="dashboard_county_button m-2 bg-red-600 px-3 py-1 text-sm rounded">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
+
                     </div>
                 </div>
             </div >

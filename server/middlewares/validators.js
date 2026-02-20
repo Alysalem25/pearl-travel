@@ -1,4 +1,5 @@
 const { body, validationResult } = require("express-validator");
+const CountryModel = require("../models/Country");
 
 /**
  * Validation Rules using express-validator
@@ -79,7 +80,7 @@ const validateCategory = [
   
   body("country")
     .optional()
-    .isIn(['Egypt', 'Albania']).withMessage("Invalid country"),
+     .isIn(['Egypt', 'Albania']).withMessage("Invalid country"),
   
   body("isActive")
     .optional()
@@ -113,9 +114,46 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
+// Visa validation
+const validateVisa = [
+  body("fullName")
+    .trim()
+    .notEmpty().withMessage("Full name is required")
+    .isLength({ min: 2, max: 100 }).withMessage("Full name must be 2-100 characters"),
+  
+  body("email")
+    .trim()
+    .normalizeEmail()
+    .isEmail().withMessage("Email must be valid"),
+  
+  body("phone")
+    .trim()
+    .notEmpty().withMessage("Phone number is required")
+    .matches(/^[0-9+\-\s()]+$/).withMessage("Phone number is invalid")
+    .isLength({ min: 10 }).withMessage("Phone must be at least 10 digits"),
+  
+  body("destinations")
+    .isArray({ min: 1 }).withMessage("At least one destination is required"),
+  
+  body("otherCountries")
+    .optional()
+    .trim()
+    .isLength({ max: 500 }).withMessage("Other countries text too long"),
+  
+  body("hasTraveledAbroad")
+    .optional()
+    .isBoolean().withMessage("hasTraveledAbroad must be boolean"),
+  
+  body("visitedCountries")
+    .optional()
+    .trim()
+    .isLength({ max: 1000 }).withMessage("Visited countries text too long")
+];
+
 module.exports = {
   validateRegister,
   validateLogin,
   validateCategory,
+  validateVisa,
   handleValidationErrors
 };

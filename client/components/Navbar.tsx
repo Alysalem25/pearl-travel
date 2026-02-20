@@ -123,10 +123,10 @@ export default function Navbar() {
               {t.navbar.home}
             </Link>
             <Link
-              href={`/about?lang=${lang}`}
+              href={`/visa?lang=${lang}`}
               className="text-gray-700 dark:text-gray-300 hover:text-[var(--mainColor)] transition-colors duration-200 font-medium"
             >
-              {t.navbar.about}
+              {t.navbar.visa}
             </Link>
 
             {/* Dropdown */}

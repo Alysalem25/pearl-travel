@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import axios from 'axios'
-import AdminSidebar from '@/Components/adminSidebar'
+import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import apiClient, { api } from '@/lib/api'
 import { User } from 'lucide-react'
@@ -108,9 +108,9 @@ const UsersPageContent = () => {
             number: '',
             role: '',
             inTeam: false,
-            image: undefined,
+            image: '',
         })
-        setPreviewImages(null)
+        setPreviewImages([])
         setEditingUser(null)
         setShowForm(false)
     }
@@ -151,12 +151,12 @@ const UsersPageContent = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-gray-900">
+        <div className="min-h-screen flex bg-white text-black">
             <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} active="users" />
 
-            <div className="flex-1 overflow-y-auto bg-gray-900">
+            <div className="flex-1 overflow-y-auto bg-white">
                 {/* Header */}
-                <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                <header className="bg-white  shadow-sm border-b border-gray-200 dark:border-gray-700">
                     <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                         <div className="flex items-center">
                             <button
@@ -167,7 +167,7 @@ const UsersPageContent = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">users Management</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">users Management</h1>
                         </div>
 
 
@@ -184,22 +184,22 @@ const UsersPageContent = () => {
                 </header>
 
                 {/* Search Bar */}
-                <div className="p-4 m-6 dark:bg-gray-800 ">
+                <div className="p-4 m-6 dark:bg-gray-200 text-black ">
                     <input
                         type="text"
                         placeholder="Search drivers..."
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="border p-2 rounded bg-gray-700 text-white w-full"
+                        className="border p-2 rounded bg-white text-black w-full"
                     />
-                    <span className="text-gray-400">
+                    <span className="">
                         {filteredUsers.length} of {User.length} users
                     </span>
                 </div>
 
                 {showForm && (
-                    <div className="bg-gray-800 m-6 p-6 rounded-lg mb-6">
-                        <h2 className="text-xl font-semibold mb-3 text-white">Add User</h2>
+                    <div className="bg-gray-200 m-6 p-6 rounded-lg mb-6">
+                        <h2 className="text-xl font-semibold mb-3 text-black">Add User</h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -209,7 +209,7 @@ const UsersPageContent = () => {
                                     placeholder="Name"
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="border p-2 rounded bg-gray-700 text-white"
+                                    className="border p-2 rounded bg-white text-black"
                                 />
                                 <input
                                     type="email"
@@ -217,7 +217,7 @@ const UsersPageContent = () => {
                                     placeholder="Email"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                    className="border p-2 rounded bg-gray-700 text-white"
+                                    className="border p-2 rounded bg-white text-black"
                                 />
                                 <input
                                     type="password"
@@ -225,7 +225,7 @@ const UsersPageContent = () => {
                                     placeholder="Password"
                                     value={formData.password}
                                     onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                    className="border p-2 rounded bg-gray-700 text-white"
+                                    className="border p-2 rounded bg-white text-black"
                                 />
                                 <input
                                     type="text"
@@ -233,14 +233,14 @@ const UsersPageContent = () => {
                                     placeholder="Phone Number"
                                     value={formData.number}
                                     onChange={e => setFormData({ ...formData, number: e.target.value })}
-                                    className="border p-2 rounded bg-gray-700 text-white"
+                                    className="border p-2 rounded bg-white text-black"
                                 />
                                 {/* role option */}
                                 <select
                                     required
                                     value={formData.role}
                                     onChange={e => setFormData({ ...formData, role: e.target.value })}
-                                    className="border p-2 rounded bg-gray-700 text-white"
+                                    className="border p-2 rounded bg-white text-black"
                                 >
                                     <option value="" disabled>Select Role</option>
                                     <option value="admin">Admin</option>
@@ -248,7 +248,7 @@ const UsersPageContent = () => {
                                 </select>
 
                                 {/* inTeam  */}
-                                <label className="flex items-center gap-2 text-gray-400">
+                                <label className="flex items-center gap-2 text-black">
                                     <input
                                         type="checkbox"
                                         checked={formData.inTeam}
@@ -287,7 +287,7 @@ const UsersPageContent = () => {
                                 <button
                                     type="button"
                                     onClick={resetForm}
-                                    className="px-6 py-2 border border-gray-600 text-white rounded hover:bg-gray-700"
+                                    className="px-6 py-2 border border-gray-600 text-black  rounded hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>
@@ -304,8 +304,8 @@ const UsersPageContent = () => {
                 )}
 
                 {/* Drivers List */}
-                <div className="bg-gray-800 p-4 m-6 rounded">
-                    <h2 className="text-lg font-semibold mb-3 text-white">All Drivers</h2>
+                <div className="bg-gray-200 p-4 m-6 rounded text-black">
+                    <h2 className="text-lg font-semibold mb-3 ">All Users</h2>
 
                     <div className="space-y-4">
                         {filteredUsers.length === 0 ? (
@@ -315,7 +315,7 @@ const UsersPageContent = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {filteredUsers.map((user: User) => (
-                                    <div key={user._id} className="border border-gray-700 p-4 rounded hover:bg-gray-800 transition">
+                                    <div key={user._id} className="border border-gray-700 p-4 rounded bg-white hover:bg-gray-300 transition">
                                         <div className="flex items-start justify-between">
                                             <img
                                                 src={user.images
@@ -326,16 +326,16 @@ const UsersPageContent = () => {
                                                 className="h-16 w-16 rounded-full object-cover mr-4"
                                             />
                                             <div className="flex-1">
-                                                <h3 className="text-xl font-semibold text-white">{user.name}</h3>
+                                                <h3 className="text-xl font-semibold text-black">{user.name}</h3>
                                                 <div className="mt-2 space-y-1">
-                                                    <p className="text-gray-400 text-sm">
+                                                    <p className="text-black text-sm">
                                                         <span className="font-semibold">Email:</span> {user.email}
                                                     </p>
                                                     {/* <p className="text-gray-400 text-sm">
                                                         <span className="font-semibold">License Number:</span> {user.licenseNumber || '-'}
                                                     </p> */}
                                                     {user.number && (
-                                                        <p className="text-gray-400 text-sm">
+                                                        <p className="text-black text-sm">
                                                             <span className="font-semibold">Number:</span> {user.number}
                                                         </p>
                                                     )}

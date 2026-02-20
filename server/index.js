@@ -62,7 +62,8 @@ app.use(
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const programRoutes = require("./routes/programRoutes");
-
+const countryRoutes = require("./routes/countryRoutes");
+const visaRoutes = require("./routes/visaRoutes");
 // ============================================
 // 🗄️ DATABASE CONNECTION
 // ============================================
@@ -107,6 +108,18 @@ app.use("/categories", categoryRoutes);
  */
 app.use("/programs", programRoutes);
 
+app.use("/countries", countryRoutes);
+
+/**
+ * Visa Routes
+ * POST   /visa           - Submit visa application (public)
+ * GET    /visa           - Get all applications (admin only)
+ * GET    /visa/:id       - Get one application (public/admin)
+ * GET    /visa/status/:id - Track application status (public)
+ * PUT    /visa/:id       - Update application (admin only)
+ * DELETE /visa/:id       - Delete application (admin only)
+ */
+app.use("/visa", visaRoutes);
 // ============================================
 // 📊 STATS ENDPOINT (PUBLIC)
 // ============================================
@@ -160,7 +173,7 @@ app.use(notFoundHandler);
 // Centralized error handler - must be last
 app.use(errorHandler);
 
-// ============================================
+// ============================================ 
 // 🚀 SERVER START
 // ============================================
 

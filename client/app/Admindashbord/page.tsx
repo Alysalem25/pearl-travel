@@ -42,11 +42,11 @@ function AdminDashboardContent() {
     // console.log("Current Stats:", stats);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+        <div className="min-h-screen bg-gray-50  flex">
             <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} active="dashboard" />
 
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                <header className="bg-white dark:bg-white shadow-sm border-b border-gray-200 dark:border-gray-700">
                     <div className="px-4 sm:px-6 lg:px-8 py-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
@@ -58,7 +58,7 @@ function AdminDashboardContent() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
                                 </button>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pearl Travel Admin</h1>
+                                <h1 className="text-2xl font-bold text-gray-900 ">Pearl Travel Admin</h1>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@ function AdminDashboardContent() {
                     </div>
 
                     {/* Geographical Distribution */}
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Program Distribution</h2>
+                    <h2 className="text-lg font-semibold text-black dark:text-white mb-4">Program Distribution</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-orange-500">
                             <div className="flex items-center justify-between">

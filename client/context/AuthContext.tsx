@@ -24,6 +24,7 @@ import {
   saveAuthData,
   clearAuthData,
   isTokenExpired,
+  getAuthToken,
   AuthUser,
   AuthResponse
 } from "@/lib/auth";
@@ -56,17 +57,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Validates token expiration
    */
   useEffect(() => {
-    const storedUser = getAuthUser();
-    if (storedUser) {
-      // Check if token has expired
-      if (isTokenExpired()) {
-        clearAuthData();
-        setUser(null);
+    const initializeAuth = () => {
+      const token = getAuthToken();
+      const storedUser = getAuthUser();
+      
+      if (token && storedUser) {
+        // Check if token has expired
+        if (isTokenExpired()) {
+          clearAuthData();
+          setUser(null);
+        } else {
+          setUser(storedUser);
+        }
       } else {
-        setUser(storedUser);
+        setUser(null);
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   /**
@@ -80,10 +89,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Save to localStorage
       saveAuthData(token, userData);
       setUser(userData);
-      
-      return response.data;
-    } catch (error) {
-      throw error;
+
+      return { token, user: userData, message: "Login successful" };
+    } catch (error: any) {
+      const message = error.response?.data?.error || "Login failed";
+      throw new Error(message);
     }
   };
 
@@ -94,21 +104,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string,
     email: string,
     password: string,
-    number: string,
-    role: string,
-    inTeam: boolean
+    number: string
   ): Promise<AuthResponse> => {
     try {
-      const response = await api.auth.register({ name, email, password, number, role, inTeam });
+      const response = await api.auth.register({ name, email, password, number });
       const { token, user: userData } = response.data;
       
       // Save to localStorage
       saveAuthData(token, userData);
       setUser(userData);
-      
-      return response.data;
-    } catch (error) {
-      throw error;
+
+      return { token, user: userData, message: "Registration successful" };
+    } catch (error: any) {
+      const message = error.response?.data?.error || "Registration failed";
+      throw new Error(message);
     }
   };
 
@@ -121,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   /**
-   * Check if user has specific role
+   * Check user role
    */
   const hasRole = (role: string): boolean => {
     return user?.role === role;
@@ -134,26 +143,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return hasRole("admin");
   };
 
-  const value = {
-    user,
-    loading,
-    isAuthenticated: !!user,
-    login,
-    register,
-    logout,
-    hasRole,
-    isAdmin
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated: !!user && !!getAuthToken(),
+        login,
+        register,
+        logout,
+        hasRole,
+        isAdmin
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 /**
- * Hook to use auth context
+ * Hook to use Auth context
  */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within AuthProvider");
   }
   return context;

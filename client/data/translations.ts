@@ -8,6 +8,7 @@ export type Language = "en" | "ar";
 export interface NavbarTranslations {
   home: string;
   about: string;
+  visa: string;
   destinations: string;
   contact: string;
   egypt: string;
@@ -47,6 +48,7 @@ export const translations: Record<Language, Translations> = {
     navbar: {
       home: "Home",
       about: "About",
+      visa: "Visa",
       destinations: "Destinations",
       contact: "Contact",
       egypt: "Egypt",
@@ -81,6 +83,7 @@ export const translations: Record<Language, Translations> = {
     navbar: {
       home: "الصفحة الرئيسية",
       about: "حول",
+      visa: "تأشيرة",
       destinations: "الوجهات",
       contact: "اتصل بنا",
       egypt: "مصر",

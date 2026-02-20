@@ -148,7 +148,7 @@ import { useSearchParams, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Language, getDirection, getLanguageFromSearchParams } from "@/lib/language";
 
-export default function Hero() {
+export default function Hero({ country }: { country?: { nameEn: string; nameAr: string; images: string[] } | null }) {
   const params = useParams();
   const searchParams = useSearchParams();
 
@@ -219,7 +219,7 @@ export default function Hero() {
 
         className={`text-white font-bold text-6xl ${isRTL ? "font-arabic" : ""}`}
       >
-        {data[lang][params.id as "Egypt" | "Albania"]}
+        {country ? (lang === "ar" ? country.nameAr : country.nameEn) : data[lang][params.id as "Egypt" | "Albania"]}
       </motion.h1>
     </section>
   );

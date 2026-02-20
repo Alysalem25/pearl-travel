@@ -16,7 +16,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #ffffff;
     --foreground: #ededed;
   }
 }
@@ -161,3 +161,39 @@ svg {
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   pointer-events: none; /* Prevents text from interfering with button hover */
 }
+.dashboard_button_img1 {
+  height: 300px;
+  width: 400px;
+  border-radius: 30px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  /* Base state for animation */
+  filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0));
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button_img1 {
+  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0, 0, 0, 0.627)), url("/OIP.webp");
+}
+
+.dashboard_button_img1:hover {
+  cursor: pointer;
+  /* Applying multiple filters: Darkens the image and adds a glow shadow */
+  filter: brightness(0.7) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+  transform: translateY(-5px) scale(1.01);
+}
+/* .dashboard_button_img1:hover .dashboard_county_button{
+display: block;
+} */
+
+/* Ensure text remains clear and doesn't blur */
+.dashboard_button_text {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  pointer-events: none; /* Prevents text from interfering with button hover */
+}
+

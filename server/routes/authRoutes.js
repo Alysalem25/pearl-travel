@@ -214,4 +214,18 @@ router.delete("/deleteUser/:id", authMiddleware, async (req, res, next) => {
   }
 });
 
+// get users in team for all
+router.get("/team", authMiddleware, async (req, res, next) => {
+  try {
+    const teamMembers = await User.find({ inTeam: true }).select("-password");
+    const normalizedUsers = teamMembers.map(user => ({
+      ...user.toObject(),
+      images: user.images ? user.images.map(normalizeImagePath) : []
+    }));
+    res.json({ team: normalizedUsers });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

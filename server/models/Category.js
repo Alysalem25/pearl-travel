@@ -25,6 +25,7 @@ const CategorySchema = new mongoose.Schema({
         default: "Egypt",
     },
     
+    
     images: [String], // array of image filenames
 
     descriptionEn: { type: String, trim: true },

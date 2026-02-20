@@ -133,15 +133,23 @@ export const decodeToken = (token: string): Record<string, any> | null => {
  * Server-side validation is ALWAYS enforced
  */
 export const isTokenExpired = (): boolean => {
-  const token = getAuthToken();
+  if (typeof window === "undefined") return true;
+  
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
   if (!token) return true;
-
-  const decoded = decodeToken(token);
-  if (!decoded || !decoded.exp) return true;
-
-  // exp is in seconds, current time is in milliseconds
-  const currentTime = Date.now() / 1000;
-  return decoded.exp <= currentTime;
+  
+  try {
+    const payload = decodeToken(token);
+    if (!payload || !payload.exp) return true;
+    
+    const expirationTime = payload.exp * 1000; // Convert to milliseconds
+    const currentTime = Date.now();
+    
+    return currentTime > expirationTime;
+  } catch (error) {
+    console.error("Token expiration check failed:", error);
+    return true;
+  }
 };
 
 /**
