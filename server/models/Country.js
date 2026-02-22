@@ -13,12 +13,27 @@ const CountrySchema = new mongoose.Schema({
         trim: true,
         unique: true
     },
-   
-    inhomepage:{
-        type:Boolean,
-        default:false,
+
+    inhomepage: {
+        type: Boolean,
+        default: false,
     },
-    
+
+    inVisa: {
+        type: Boolean,
+        default: false,
+    },
+
+    inFromCountry: {
+        type: Boolean,
+        default: false,
+    },
+
+    inToCountry: {
+        type: Boolean,
+        default: false,
+    },
+
     images: [String],
 
 }, {

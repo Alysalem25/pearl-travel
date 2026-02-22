@@ -10,7 +10,7 @@ export interface NavbarTranslations {
   about: string;
   visa: string;
   destinations: string;
-  contact: string;
+  flight: string;
   egypt: string;
   albania: string;
 }
@@ -50,7 +50,7 @@ export const translations: Record<Language, Translations> = {
       about: "About",
       visa: "Visa",
       destinations: "Destinations",
-      contact: "Contact",
+      flight: "Flight",
       egypt: "Egypt",
       albania: "Albania",
     },
@@ -85,7 +85,7 @@ export const translations: Record<Language, Translations> = {
       about: "حول",
       visa: "تأشيرة",
       destinations: "الوجهات",
-      contact: "اتصل بنا",
+      flight: "الرحلات الجوية",
       egypt: "مصر",
       albania: "ألبانيا",
     },

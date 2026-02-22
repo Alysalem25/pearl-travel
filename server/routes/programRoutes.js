@@ -3,7 +3,7 @@ const upload = require("../middlewares/upload");
 const authMiddleware = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorizeMiddleware");
 const Program = require("../models/Programs");
-
+const BookedPrograms = require("../models/BookedPrograms");
 const router = express.Router();
 
 /**
@@ -40,7 +40,7 @@ router.get("/category/:categoryId", async (req, res, next) => {
 
     const programs = await Program.find({
       category: categoryId,
-      status:"active",
+      status: "active",
     }).populate("category", "nameEn nameAr");
 
     if (!programs.length) {
@@ -56,6 +56,58 @@ router.get("/category/:categoryId", async (req, res, next) => {
 
     res.json(normalizedPrograms);
   } catch (err) {
+    next(err);
+  }
+});
+
+// Admin route to get all booked programs
+router.get("/booked", authMiddleware, authorize("admin"), async (req, res, next) => {
+  try {
+    const bookedPrograms = await BookedPrograms.find().populate("program");
+    res.json(bookedPrograms);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// admin update booking status
+router.put("/booked/:id/status", authMiddleware, authorize("admin"), async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!["pending", "reviewed"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
+    }
+    const bookedProgram = await BookedPrograms.findByIdAndUpdate(
+      req.params.id,
+      { status: status === "pending" ? "pending" : "reviewed" },
+      { new: true, runValidators: true }
+    ).populate("program");
+    if (!bookedProgram) return res.status(404).json({ error: "Booking not found" });
+    res.json(bookedProgram);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// User route to book a program
+router.post("/book", async (req, res, next) => {
+  try {
+    const { userEmail, userName, userNumber, programId, message } = req.body;
+    const program = await Program.findById(programId);
+    if (!program) {
+      return res.status(404).json({ error: "Program not found" });
+    }
+    const bookedProgram = new BookedPrograms({
+      userEmail,
+      userName,
+      userNumber,
+      program: programId,
+      message
+    });
+    await bookedProgram.save();
+    res.status(201).json(bookedProgram);
+  }
+  catch (err) {
     next(err);
   }
 });
@@ -224,6 +276,7 @@ router.delete("/:id", authMiddleware, authorize("admin"), async (req, res, next)
     next(err);
   }
 });
+
 
 
 

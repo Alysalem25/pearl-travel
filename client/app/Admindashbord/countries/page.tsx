@@ -12,7 +12,9 @@ interface Country {
     nameAr: string
     country: string
     images: string[]
-    inhomepage: boolean
+    inVisa: boolean
+    inFromCountry:boolean,
+    inToCountry:boolean,
 }
 
 export default function CountryPage() {
@@ -34,7 +36,9 @@ const CountryPageContent = () => {
         nameEn: '',
         nameAr: '',
         images: '',
-        inhomepage: false
+        inVisa: false,
+        inFromCountry:false,
+        inToCountry:false,
     })
 
     const queryClient = useQueryClient()
@@ -89,7 +93,9 @@ const CountryPageContent = () => {
                 await api.countries.update(editingCountry._id, {
                     nameEn: formData.nameEn,
                     nameAr: formData.nameAr,
-                    inhomepage: formData.inhomepage
+                    inVisa: formData.inVisa,
+                    inFromCountry: formData.inFromCountry,
+                    inToCountry: formData.inToCountry
                 });
 
                 alert('Country updated!');
@@ -97,7 +103,9 @@ const CountryPageContent = () => {
                 const data = new FormData();
                 data.append('nameEn', formData.nameEn);
                 data.append('nameAr', formData.nameAr);
-                data.append('inhomepage', String(formData.inhomepage));
+                data.append('inVisa', String(formData.inVisa));
+                data.append('inFromCountry', String(formData.inFromCountry));
+                data.append('inToCountry', String(formData.inToCountry));
                 if (images.length > 0) data.append('images', images[0]);
 
                 await api.countries.create(data);
@@ -117,7 +125,9 @@ const CountryPageContent = () => {
             nameEn: '',
             nameAr: '',
             images: '',
-            inhomepage: false
+            inVisa: false,
+            inFromCountry: false,
+            inToCountry: false
         })
         setImages([])
         setPreviewImages([])
@@ -131,7 +141,9 @@ const CountryPageContent = () => {
             nameEn: c.nameEn,
             nameAr: c.nameAr,
             images: '',
-            inhomepage: c.inhomepage
+            inVisa: c.inVisa,
+            inFromCountry: c.inFromCountry,
+            inToCountry: c.inToCountry
         })
 
         // show existing images from server
@@ -230,7 +242,13 @@ const CountryPageContent = () => {
                             )}
                             <div className="flex items-center gap-4">
                                 <label className="flex items-center gap-2">
-                                    <input type="radio" checked={formData.inhomepage === true} onChange={() => setFormData({ ...formData, inhomepage: !formData.inhomepage })} /> Active
+                                    <input type="checkbox" checked={formData.inVisa === true} onChange={() => setFormData({ ...formData, inVisa: !formData.inVisa })} /> Add to Visa
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input type="checkbox" checked={formData.inFromCountry === true} onChange={() => setFormData({ ...formData, inFromCountry: !formData.inFromCountry })} /> Add to From Country
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input type="checkbox" checked={formData.inToCountry === true} onChange={() => setFormData({ ...formData, inToCountry: !formData.inToCountry })} /> Add to To Country
                                 </label>
                                 {/* <label className="flex items-center gap-2">
                                     <input type="radio" checked={formData.isActive === false} onChange={() => setFormData({ ...formData, isActive: false })} /> Inactive

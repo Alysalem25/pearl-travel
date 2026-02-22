@@ -196,6 +196,24 @@ export const api = {
       apiClient.delete(`/countries/${id}`)
   }, 
 
+  // flights endpoints
+  flights: {
+    create: (data: { userEmail: string; userName?: string; userNumber?: number; from: string; to: string }) =>
+      apiClient.post("/flights", data),
+    getAll: () => apiClient.get("/flights"),
+    delete: (id: string) => apiClient.delete(`/flights/${id}`),
+    changeStatus: (id: string, status: string) => apiClient.put(`/flights/${id}/status`, { status })
+  },
+
+  // booked programs endpoints
+  bookings: {
+    create: (data: { userEmail: string; userName: string; userNumber: string; message: string; programId: string }) =>
+      apiClient.post("/programs/book", data),
+    getAll: () => apiClient.get("/programs/booked"),
+    delete: (id: string) => apiClient.delete(`/programs/booked/${id}`),
+    changeStatus: (id: string, status: string) => apiClient.put(`/programs/booked/${id}/status`, { status })
+  },
+
   /**
    * Stats endpoint
    */

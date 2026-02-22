@@ -64,6 +64,7 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const programRoutes = require("./routes/programRoutes");
 const countryRoutes = require("./routes/countryRoutes");
 const visaRoutes = require("./routes/visaRoutes");
+const flightRoutes = require("./routes/flightRoutes");
 // ============================================
 // 🗄️ DATABASE CONNECTION
 // ============================================
@@ -120,6 +121,7 @@ app.use("/countries", countryRoutes);
  * DELETE /visa/:id       - Delete application (admin only)
  */
 app.use("/visa", visaRoutes);
+app.use("/flights", flightRoutes);
 // ============================================
 // 📊 STATS ENDPOINT (PUBLIC)
 // ============================================
@@ -127,6 +129,9 @@ app.use("/visa", visaRoutes);
 const Admin = require("./models/Users");
 const Program = require("./models/Programs");
 const Category = require("./models/Category");
+const Visa = require("./models/Visa");
+const Flights = require("./models/Flights");
+const BookedPrograms = require("./models/BookedPrograms");
 
 app.get("/stats", async (req, res, next) => {
   try {
@@ -136,14 +141,37 @@ app.get("/stats", async (req, res, next) => {
       inactivePrograms,
       categoriesCount,
       egyptPrograms,
-      internationalPrograms
+      internationalPrograms,
+      visaApplications,
+      visaPending,
+      visaReviewed,
+      flightCount,
+      reviewedFlights,
+      pendingFlights,
+      bookedCount,
+      pendingBookings,
+      reviewedBookings
+
     ] = await Promise.all([
       Admin.countDocuments(),
       Program.countDocuments({ status: "active" }),
       Program.countDocuments({ status: "inactive" }),
       Category.countDocuments(),
       Program.countDocuments({ country: "Egypt" }),
-      Program.countDocuments({ country: "Albania" })
+      Program.countDocuments({ country: "Albania" }),
+      // Visa stats
+      Visa.countDocuments(),
+      Visa.countDocuments({ status: "pending" }),
+      Visa.countDocuments({ status: "reviewed" }),
+      // Flight stats
+      Flights.countDocuments(),
+      Flights.countDocuments({ status: "reviewed" }),
+      Flights.countDocuments({ status: "pending" }),
+      // Booked programs stats
+      BookedPrograms.countDocuments(),
+      BookedPrograms.countDocuments({ status: "pending" }),
+      BookedPrograms.countDocuments({ status: "reviewed" })
+
     ]);
 
     res.json({
@@ -153,7 +181,17 @@ app.get("/stats", async (req, res, next) => {
         totalPrograms: activePrograms + inactivePrograms,
         categoriesCount,
         egyptPrograms,
-        internationalPrograms
+        internationalPrograms,
+        visaApplications,
+        visaPending,
+        visaReviewed,
+        flightCount,
+        reviewedFlights,
+        pendingFlights,
+        bookedCount,
+        pendingBookings,
+        reviewedBookings
+
       }
     });
   } catch (err) {

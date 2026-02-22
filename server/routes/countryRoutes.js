@@ -103,6 +103,9 @@ router.post(
         nameEn,
         nameAr,
         inhomepage,
+        inVisa,
+        inFromCountry,
+        inToCountry
       } = req.body;
 
       const images = (req.files || []).map(f => f.filename);
@@ -111,6 +114,9 @@ router.post(
         nameEn,
         nameAr,
         inhomepage,
+        inVisa,
+        inFromCountry,
+        inToCountry,
         images
       });
       await country.save();
@@ -230,4 +236,36 @@ router.get("/inhomepage", async (req ,res,next) => {
     }
 });
 
-module.exports = router;
+
+// inVisa countries
+router.get("/inVisa", async (req ,res,next) => {
+    try {
+      const countries = await Country.find({ inVisa: true });
+
+      res.json(countries);
+    } catch (err) {
+      next(err);
+    }
+});
+
+// inFromCountry countries
+router.get("/inFromCountry", async (req ,res,next) => {
+    try {
+      const countries = await Country.find({ inFromCountry: true });
+
+      res.json(countries);
+    } catch (err) {
+      next(err);
+    }
+});
+
+// inToCountry countries
+router.get("/inToCountry", async (req ,res,next) => {
+    try {
+      const countries = await Country.find({ inToCountry: true });
+      res.json(countries);
+    } catch (err) {
+      next(err);
+    }
+});
+module.exports = router;    

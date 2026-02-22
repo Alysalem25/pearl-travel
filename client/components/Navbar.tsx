@@ -156,14 +156,14 @@ export default function Navbar() {
                     } top-full mt-2 bg-white dark:bg-gray-800 backdrop-blur-xl shadow-lg rounded-lg w-40 overflow-hidden`}
                   >
                     <Link
-                      href={`/egypt?lang=${lang}`}
+                      href={`/Egypt?lang=${lang}`}
                       className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                       onClick={() => setDestinationsDropdown(false)}
                     >
                       {t.navbar.egypt}
                     </Link>
                     <Link
-                      href={`/albania?lang=${lang}`}
+                      href={`/Albania?lang=${lang}`}
                       className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                       onClick={() => setDestinationsDropdown(false)}
                     >
@@ -175,10 +175,10 @@ export default function Navbar() {
             </div>
 
             <Link
-              href={`/contact?lang=${lang}`}
+              href={`/Flight?lang=${lang}`}
               className="text-gray-700 dark:text-gray-300 hover:text-[var(--mainColor)] transition-colors duration-200 font-medium"
             >
-              {t.navbar.contact}
+              {t.navbar.flight}
             </Link>
 
             {/* Language Switcher */}

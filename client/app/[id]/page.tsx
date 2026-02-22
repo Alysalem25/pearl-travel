@@ -93,7 +93,7 @@ const Page = () => {
   }
 
   return (
-    <div dir={getDirection(lang)} className="bg-white min-h-screen">
+    <div dir={getDirection(lang)} className="bg-white ">
       <Navbar />
       <CountryHero />
 
@@ -101,6 +101,7 @@ const Page = () => {
         variants={container}
         initial="hidden"
         whileInView="show"
+        className="my-6"
       >
         <motion.h1
           variants={item}

@@ -40,6 +40,15 @@ interface Program {
     }[];
 }
 
+interface BookingData {
+    _id: string,
+    userName: string;
+    userEmail: string;
+    userNumber: string;
+    message: string;
+    programId: string;
+}
+
 const ProgramPage = () => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
     const [program, setProgram] = React.useState<Program | null>(null);
@@ -54,6 +63,35 @@ const ProgramPage = () => {
     const [mounted, setMounted] = useState(false);
     const [activeDayIndex, setActiveDayIndex] = useState<number | null>(null);
     const searchParams = useSearchParams();
+    const [formData, setFormData] = useState({
+        userName: '',
+        userEmail: '',
+        userNumber: '',
+        message: ''
+    });
+
+    const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const bookingData: BookingData = {
+                userName: formData.userName,
+                userEmail: formData.userEmail,
+                userNumber: formData.userNumber,
+                message: formData.message,
+                programId: programId
+            }
+            await api.bookings.create(bookingData);
+            alert(lang === "en" ? "Booking successful! We will contact you soon." : "تم الحجز بنجاح! سنتواصل معك قريبًا.");
+            setFormData({
+                userName: '',
+                userEmail: '',
+                userNumber: '',
+                message: ''
+            });
+        } catch (err) {
+            alert(lang === "en" ? "Failed to book program." : "فشل في حجز البرنامج.");
+        }
+    };
 
     /* language */
     useEffect(() => {
@@ -94,7 +132,8 @@ const ProgramPage = () => {
                         <h1 className="text-2xl font-bold">{(lang === 'en' ? "Program Details" : "تفاصيل البرنامج")}</h1>
                     </div>
                     <div className="flex  items-center space-x-4">
-                        <h1 className="text-lg font-medium">{program ? (lang === "en" ? program.country + " . " + program.category.nameEn + " . " + program.titleEn : program.country + " . " + program.category.nameAr + " . " + program.titleAr) : "Loading..."}</h1>
+                        <h1 className="text-lg font-medium">
+                            {program ? (lang === "en" ? program.country + " . " + program.category.nameEn + " . " + program.titleEn : program.country + " . " + program.category.nameAr + " . " + program.titleAr) : "Loading..."}</h1>
                     </div>
                 </header>
 
@@ -228,16 +267,64 @@ const ProgramPage = () => {
                                             }
 
                                         </div>
+
+
+
                                     </div>
                                 </div>
 
+                                {/* book div */}
+                                <div className="rounded-lg p-6 flex flex-col items-center justify-center border-2 border-gray-200">
+                                    <h2 className="text-2xl font-bold mb-4 text-blue-400">{lang === "en" ? "Ready to Book?" : "جاهز للحجز؟"}</h2>
+                                    <form className="w-full max-w-md mt-6" onSubmit={(e) => {
+                                        handelSubmit(e);
+                                    }}>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                                                {lang === "en" ? "Name" : "الاسم"}
+                                            </label>
+                                            <input
+                                                onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder={lang === "en" ? "Your Name" : "اسمك"} />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                                                {lang === "en" ? "Email" : "البريد الإلكتروني"}
+                                            </label>
+                                            <input
+                                                onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder={lang === "en" ? "Your Email" : "بريدك الإلكتروني"} />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="number">
+                                                {lang === "en" ? "Number" : "رقم الهاتف"}
+                                            </label>
+                                            <input
+                                                onChange={(e) => setFormData({ ...formData, userNumber: e.target.value })}
+                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="number" type="tel" placeholder={lang === "en" ? "Your Number" : "رقم هاتفك"} />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="message">
+                                                {lang === "en" ? "Message" : "الرسالة"}
+                                            </label>
+                                            <textarea
+                                                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" placeholder={lang === "en" ? "Your Message" : "رسالتك"} rows={4}></textarea>
+                                        </div>
+                                        <div className="flex items-center justify-center">
+                                            <button className="px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit">
+                                                {lang === "en" ? "Send Message" : "إرسال الرسالة"}
+                                            </button>
+                                        </div>
+                                    </form>
 
+                                </div>
                             </div>
 
                         </div>
                     )}
                 </div>
-            <Footer/>
+                <Footer />
             </div>
         </div>
     );

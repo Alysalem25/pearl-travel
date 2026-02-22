@@ -15,8 +15,7 @@ router.post("/", handleValidationErrors, async (req, res, next) => {
         const {
             fullName,
             email,
-            phone,
-            destination,
+            phone, 
             otherCountries,
             hasTraveledAbroad,
             visitedCountries
