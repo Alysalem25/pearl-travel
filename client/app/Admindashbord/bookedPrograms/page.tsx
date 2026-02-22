@@ -76,6 +76,7 @@ const BookedProgramsPageContent = () => {
                                         <div className="font-semibold">{f.userName || f.userEmail}</div>
                                         <div className="text-sm text-gray-600">{f.userEmail} • {f.userNumber}</div>
                                         <div className="text-sm text-gray-700 mt-2">Program - {f.program?.titleEn} • {f.program?.titleAr}</div>
+                                        <div className="text-sm text-gray-700 mt-2">Massage - {f.message}</div>
                                         <div className="text-xs text-gray-500">{f.createdAt ? new Date(f.createdAt).toLocaleString() : ''}</div>
                                     </div>
                                     <div className="flex gap-2">

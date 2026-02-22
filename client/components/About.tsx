@@ -309,19 +309,19 @@ export default function About() {
             className="grid grid-cols-2 gap-6"
           >
             <img
-              src="airport-transfer.webp"
+              src="/about2.jpeg"
               alt=""
               className="col-span-2 rounded-2xl object-cover w-full h-64 shadow-lg"
             />
             <img
-              src="/Marsa allam.jpg"
+              src="/about1.jpeg"
               alt=""
-              className="rounded-3xl object-cover w-full shadow-lg"
+              className="rounded-3xl object-cover h-52 w-full shadow-lg"
             />
             <img
-              src="/OIP.webp"
+              src="/about3.jpeg"
               alt=""
-              className="rounded-3xl object-cover w-full shadow-xl"
+              className="rounded-3xl object-cover  w-full shadow-xl"
             />
           </motion.div>
         </div>

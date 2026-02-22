@@ -14,6 +14,7 @@ import { api } from "@/lib/api";
 type VisaStepOneForm = {
   name: string;
   phone: string;
+  email: string;
   destination: string;
   otherCountries: string;
 };
@@ -194,7 +195,7 @@ export default function VisaPage() {
     try {
       const payload = {
         fullName: stepOneForm.name,
-        email: stepOneForm.phone, // Using phone as email placeholder if email field not added
+        email: stepOneForm.email,
         phone: stepOneForm.phone,
         destination: stepOneForm.destination,
         otherCountries: stepOneForm.otherCountries,

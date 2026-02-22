@@ -16,10 +16,10 @@ const BookedProgramsSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // message: {
-    //     type: String,
-    //     default: "Egypt",
-    // },
+    message: {
+        type: String,
+        default: "Egypt",
+    },
     program: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Program",
