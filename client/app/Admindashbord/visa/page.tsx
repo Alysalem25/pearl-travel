@@ -12,7 +12,7 @@ interface VisaApplication {
     fullName: string
     email: string
     phone: string
-    destinations: string[]
+    destination: string
     otherCountries: string
     hasTraveledAbroad: boolean
     visitedCountries: string
@@ -69,6 +69,7 @@ const VisaPageContent = () => {
             const response = await apiClient.get('/visa')
             setVisas(response.data.data || [])
             calculateStats(response.data.data || [])
+            console.log('Fetched visas:', response.data.data)
         } catch (err: any) {
             setError(err.response?.data?.error || 'Failed to fetch visa applications')
             console.error(err)
@@ -76,6 +77,7 @@ const VisaPageContent = () => {
             setLoading(false)
         }
     }
+
 
     const calculateStats = (applications: VisaApplication[]) => {
         const newStats: VisaStats = {
@@ -373,11 +375,11 @@ const VisaPageContent = () => {
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Destinations</h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {selectedVisa.destinations.map((dest, idx) => (
-                                        <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                                            {dest}
+                                    {selectedVisa.destination && (
+                                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                            {selectedVisa.destination}
                                         </span>
-                                    ))}
+                                    )}
                                 </div>
                                 {selectedVisa.otherCountries && (
                                     <div className="mt-3">
@@ -412,7 +414,7 @@ const VisaPageContent = () => {
                                             <select
                                                 value={newStatus}
                                                 onChange={(e) => setNewStatus(e.target.value as VisaApplication['status'])}
-                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-black focus:ring-blue-500"
                                             >
                                                 <option value="pending">Pending</option>
                                                 <option value="under_review">Under Review</option>
@@ -426,7 +428,7 @@ const VisaPageContent = () => {
                                             <textarea
                                                 value={adminNotes}
                                                 onChange={(e) => setAdminNotes(e.target.value)}
-                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-blue-500"
                                                 rows={3}
                                                 placeholder="Add notes for this application..."
                                             />

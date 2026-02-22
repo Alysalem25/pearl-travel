@@ -14,7 +14,7 @@ const router = express.Router();
  * Used by API to return absolute paths that work in browser
  */
 function normalizeImagePath(imagePath) {
-  return `/uploads/countries/${imagePath}`; 
+  return `/uploads/countries/${imagePath}`;
 }
 
 /**
@@ -95,7 +95,7 @@ router.post(
   authMiddleware,
   authorize("admin"),
   uploadCountry.array("images", 1),
-//   validateCategory,
+  //   validateCategory,
   handleValidationErrors,
   async (req, res, next) => {
     try {
@@ -141,11 +141,11 @@ router.put(
   "/:id",
   authMiddleware,
   authorize("admin"),
-//   validateCategory,
+  //   validateCategory,
   handleValidationErrors,
   async (req, res, next) => {
     try {
-      const { nameEn, nameAr,inhomepage } = req.body;
+      const { nameEn, nameAr, inhomepage } = req.body;
 
       const country = await Country.findByIdAndUpdate(
         req.params.id,
@@ -223,49 +223,56 @@ router.post(
 
 
 //  inhomepage countries
-router.get("/inhomepage", async (req ,res,next) => {
-    try {
-      const countries = await Country.find({ inhomepage: true });
-      const normalizedCountries = countries.map(country => ({
-        ...country.toObject(),
-        images: country.images ? country.images.map(normalizeImagePath) : []
-      }));
-      res.json(normalizedCountries);
-    } catch (err) {
-      next(err);
-    }
+router.get("/inhomepage", async (req, res, next) => {
+  try {
+    const countries = await Country.find({ inhomepage: true });
+    const normalizedCountries = countries.map(country => ({
+      ...country.toObject(),
+      images: country.images ? country.images.map(normalizeImagePath) : []
+    }));
+    res.json(normalizedCountries);
+  } catch (err) {
+    next(err);
+  }
 });
 
 
 // inVisa countries
-router.get("/inVisa", async (req ,res,next) => {
+router.get("/inVisa", async (req, res, next) => {
     try {
-      const countries = await Country.find({ inVisa: true });
-
-      res.json(countries);
-    } catch (err) {
-      next(err);
-    }
+    const countries = await Country.find({ inVisa: true });
+    const normalizedCountries = countries.map(country => ({
+      ...country.toObject(),
+      images: country.images ? country.images.map(normalizeImagePath) : []
+    }));
+    res.json(normalizedCountries);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // inFromCountry countries
-router.get("/inFromCountry", async (req ,res,next) => {
-    try {
-      const countries = await Country.find({ inFromCountry: true });
+router.get("/inFromCountry", async (req, res, next) => {
+  try {
+    const countries = await Country.find({ inFromCountry: true });
 
-      res.json(countries);
-    } catch (err) {
-      next(err);
-    }
+    res.json(countries);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // inToCountry countries
-router.get("/inToCountry", async (req ,res,next) => {
-    try {
-      const countries = await Country.find({ inToCountry: true });
-      res.json(countries);
-    } catch (err) {
-      next(err);
-    }
+router.get("/inToCountry", async (req, res, next) => {
+  try {
+    const countries = await Country.find({ inToCountry: true });
+    const normalizedCountries = countries.map(country => ({
+      ...country.toObject(),
+      images: country.images ? country.images.map(normalizeImagePath) : []
+    }));
+    res.json(normalizedCountries);
+  } catch (err) {
+    next(err);
+  }
 });
 module.exports = router;    

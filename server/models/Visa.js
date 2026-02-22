@@ -20,10 +20,10 @@ const VisaSchema = new mongoose.Schema({
     },
     
     // Destination Information
-    destinations: [{
+    destination: {
         type: String,
         required: true
-    }],
+    },
     otherCountries: {
         type: String,
         trim: true,
@@ -95,3 +95,4 @@ VisaSchema.index({ status: 1 });
 VisaSchema.index({ submittedAt: -1 });
 
 module.exports = mongoose.models.Visa || mongoose.model("Visa", VisaSchema);
+

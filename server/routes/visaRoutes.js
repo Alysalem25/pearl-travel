@@ -17,6 +17,7 @@ router.post("/", handleValidationErrors, async (req, res, next) => {
             email,
             phone, 
             otherCountries,
+            destination,
             hasTraveledAbroad,
             visitedCountries
         } = req.body;
@@ -40,7 +41,7 @@ router.post("/", handleValidationErrors, async (req, res, next) => {
             fullName,
             email,
             phone,
-            destinations : Array.isArray(destination ) ? destination  : [destination],
+            destination ,
             otherCountries: otherCountries || "",
             hasTraveledAbroad: hasTraveledAbroad === true || hasTraveledAbroad === "true",
             visitedCountries: visitedCountries || ""

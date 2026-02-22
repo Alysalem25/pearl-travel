@@ -112,6 +112,17 @@ router.post("/book", async (req, res, next) => {
   }
 });
 
+//  admin delete a booking
+router.delete("/booked/:id", authMiddleware, authorize("admin"), async (req, res, next) => {
+  try {
+    const bookedProgram = await BookedPrograms.findByIdAndDelete(req.params.id);
+    if (!bookedProgram) return res.status(404).json({ error: "Booking not found" });
+    res.json({ message: "Booking deleted" });
+  } catch (err) {
+    next(err);
+  }
+});
+
 /**
  * GET /programs/:id
  * Get single program by ID - PUBLIC ROUTE

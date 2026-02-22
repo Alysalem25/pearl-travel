@@ -185,6 +185,7 @@ export const api = {
   // countries endpoints
   countries: {
     getAll: () => apiClient.get("/countries"),
+    getInVisa:() => apiClient.get("/countries/inVisa"),
     getOne: (id: string) => apiClient.get(`/countries/${id}`),
     create: (data: FormData) =>
       apiClient.post("/countries", data, {

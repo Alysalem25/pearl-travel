@@ -92,7 +92,7 @@ export default function VisaPage() {
       try {
         setLoadingCountries(true)
 
-        const res = await api.countries.getAll()
+        const res = await api.countries.getInVisa()
 
         // لو الـ API بترجع { countries: [...] }
         const data = res.data.countries || res.data
