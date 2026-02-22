@@ -82,11 +82,11 @@ const OurTeam = () => {
                                         {member.role}
                                     </p>
 
-                                    {member.number && (
+                                    {/* {member.number && (
                                         <p className="text-gray-400 text-sm">
                                             📞 {member.number}
                                         </p>
-                                    )}
+                                    )} */}
 
                                     {/* Video (optional) */}
                                     {member.video && (
