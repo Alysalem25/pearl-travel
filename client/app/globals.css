@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --mainColor: red;
+  --secondColor: #1a195d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* RTL Support */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+}
+
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #444;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* Arabic Font Support */
+.font-arabic {
+  font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
+  font-feature-settings: "kern" 1;
+}
+
+/* Smooth transitions for language switching */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Ensure video backgrounds don't interfere with layout */
+video {
+  pointer-events: none;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-track {
+    background: #1f1f1f;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #666;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
+}
+
+
+
+.blob-container {
+  width: 900px;
+  max-width: 100%;
+}
+
+svg {
+  /* width: 100%; */
+  /* height: auto;? */
+  /* display: block; */
+}
+/* Custom Button Styles */
+.button_img1, .button_img2 {
+  height: 300px;
+  width: 400px;
+  border-radius: 30px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  /* Base state for animation */
+  filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0));
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button_img1 {
+  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0, 0, 0, 0.627)), url("/OIP.webp");
+}
+
+.button_img2 {
+  /* Replace with your Albania image path */
+  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url("/Marsa\ allam.jpg");
+}
+
+.button_img1:hover, .button_img2:hover {
+  cursor: pointer;
+  /* Applying multiple filters: Darkens the image and adds a glow shadow */
+  filter: brightness(0.7) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+  transform: translateY(-5px) scale(1.01);
+}
+
+/* Ensure text remains clear and doesn't blur */
+.button_text {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  pointer-events: none; /* Prevents text from interfering with button hover */
+}
+.dashboard_button_img1 {
+  height: 300px;
+  width: 400px;
+  border-radius: 30px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  /* Base state for animation */
+  filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0));
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button_img1 {
+  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0, 0, 0, 0.627)), url("/OIP.webp");
+}
+
+.dashboard_button_img1:hover {
+  cursor: pointer;
+  /* Applying multiple filters: Darkens the image and adds a glow shadow */
+  filter: brightness(0.7) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+  transform: translateY(-5px) scale(1.01);
+}
+/* .dashboard_button_img1:hover .dashboard_county_button{
+display: block;
+} */
+
+/* Ensure text remains clear and doesn't blur */
+.dashboard_button_text {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  pointer-events: none; /* Prevents text from interfering with button hover */
+}
+

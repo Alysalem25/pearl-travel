@@ -1,0 +1,73 @@
+## Create new user
+# GET  http://localhost:5000/country-category/egypt
+# Content-Type: application/json
+
+
+# GET  http://localhost:5000/category/6981fe7ed188377ff3917b6c
+# Content-Type: application/json
+
+
+# POST http://localhost:5000/auth/register
+# Content-Type: application/json
+
+# {
+#   "name": "aly3",
+#   "email": "aly3@gmail.com",
+#   "password": "Aa123456",
+#   "number": "43225234",
+#   "role":"admin",
+#   "images": [
+#     "https://res.cloudinary.com/dzj6l8n0v/image/upload/v1700000000/pearl-travel/user-avatars/default-avatar.png"
+#   ]
+# }
+
+
+POST http://localhost:5000/flights
+Content-Type: application/json
+
+{
+  "userEmail": "test@gmail.com",
+  "userName": "Ahmed",
+  "userNumber": "0100000000",
+  "tripType": "round",
+  "from": "Cairo",
+  "to": "London",
+  "date": "2026-03-10",
+  "returnDate": "2026-03-20",
+  "numOfAdults": 2,
+  "numOfChildren": 1,
+  "cabinClass": "economy"
+}
+
+POST http://localhost:5000/flights
+Content-Type: application/json
+
+{
+  "userEmail": "test@gmail.com",
+  "userName": "Ahmed",
+  "userNumber": "0100000000",
+  "tripType": "multi",
+  "multiCities": [
+    { "from": "Cairo", "to": "Dubai", "date": "2026-05-01" },
+    { "from": "Dubai", "to": "Tokyo", "date": "2026-05-05" }
+  ],
+  "numOfAdults": 2,
+  "numOfChildren": 0,
+  "cabinClass": "first"
+}
+
+POST http://localhost:5000/flights
+Content-Type: application/json
+
+{
+  "userEmail": "test@gmail.com",
+  "userName": "Ahmed",
+  "userNumber": "0100000000",
+  "tripType": "oneway",
+  "from": "Cairo",
+  "to": "Paris",
+  "date": "2026-04-01",
+  "numOfAdults": 1,
+  "numOfChildren": 0,
+  "cabinClass": "business"
+}
