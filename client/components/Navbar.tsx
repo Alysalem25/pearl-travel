@@ -134,6 +134,12 @@ export default function Navbar() {
             >
               {t.navbar.cars}
             </Link>
+            <Link
+              href={`/hotel?lang=${lang}`}
+              className="text-gray-700 dark:text-gray-300 hover:text-[var(--mainColor)] transition-colors duration-200 font-medium"
+            >
+              {t.navbar.hotel}
+            </Link>
 
             {/* Dropdown */}
             <div className="relative" data-dropdown="destinations">

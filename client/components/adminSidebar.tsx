@@ -139,6 +139,15 @@ const admin_sidebar = ({ sidebarOpen, setSidebarOpen, active }) => {
                   transportation
                 </Link>
               </li>
+              <li onClick={() => setActive("hotels")} className={Active === "hotels" ? "bg-gray-200 dark:bg-gray-100 rounded-lg" : ""}>
+                <Link
+                  href="/Admindashbord/hotel"
+                  className="flex items-center px-4 py-3 text-black rounded-lg hover:bg-gray-100  transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="black"><path d="M303.5-376.5Q327-400 360-400t56.5 23.5Q440-353 440-320t-23.5 56.5Q393-240 360-240t-56.5-23.5Q280-287 280-320t23.5-56.5ZM480-400h240q33 0 56.5 23.5T800-320v280h-80v-80H240v80h-80v-400h80v240h240v-200Zm150-40L512-654 406-548l10 68-30 30-47-88-88-48 30-30 68 9 106-106-215-117 38-38 264 68 108-108q12-12 29-12t29 12q12 12 12 29t-12 29L600-742l68 264-38 38Zm90 240v-120H560v120h160Zm-160 0v-120 120Z" /></svg>
+                  Hotels
+                </Link>
+              </li>
 
             </ul>
           </nav>

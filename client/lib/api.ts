@@ -212,7 +212,7 @@ export const api = {
       apiClient.post("/programs/book", data),
     getAll: () => apiClient.get("/programs/booked"),
     delete: (id: string) => apiClient.delete(`/programs/booked/${id}`),
-    changeStatus: (id: string, status: string, reviewedBy: string) => apiClient.put(`/programs/booked/${id}/status`, { status, reviewedBy })
+    changeStatus: (id: string, status: string, ) => apiClient.put(`/programs/booked/${id}/status`, { status })
   },
 
 
@@ -222,13 +222,30 @@ export const api = {
       apiClient.post("/carTrip", data),
     getAll: () => apiClient.get("/carTrip"),
     delete: (id: string) => apiClient.delete(`/carTrip/${id}`),
-    changeStatus: (id: string, status: string, reviewedBy: string) => apiClient.put(`/carTrip/${id}/status`, { status, reviewedBy })
+    changeStatus: (id: string, status: string) => apiClient.put(`/carTrip/${id}/status`, { status })
+  },
+
+  // hotel endpoints
+  hotelBooking: {
+    create: (data: { userEmail: string; userName: string; userNumber: string; message: string; hotelId: string }) =>
+      apiClient.post("/hotelBooking", data),
+    getAll: () => apiClient.get("/hotelBooking"),
+    delete: (id: string) => apiClient.delete(`/hotelBooking/${id}`),
+    changeStatus: (id: string, status: string, reviewedBy?: string) =>
+      apiClient.put(`/hotelBooking/${id}/status`, { status, reviewedBy })
   },
 
   /**
    * Stats endpoint
    */
-  getStats: () => apiClient.get("/stats")
+  getStats: () => apiClient.get("/stats"),
+  users: {
+    getSummary: (id: string, start?: string, end?: string) =>
+      apiClient.get(`/users/${id}/summary`, {
+        params: { ...(start ? { start } : {}), ...(end ? { end } : {}) }
+      }),
+    getOne: (id: string) => apiClient.get(`/users/${id}`)
+  }
 };
 
 export default apiClient;

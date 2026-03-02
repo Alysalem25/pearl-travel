@@ -65,7 +65,9 @@ const programRoutes = require("./routes/programRoutes");
 const countryRoutes = require("./routes/countryRoutes");
 const visaRoutes = require("./routes/visaRoutes");
 const flightRoutes = require("./routes/flightRoutes");
-const carTripsRoutes = require("./routes/carTrip")
+const carTripsRoutes = require("./routes/carTrip");
+const hotelRoute = require("./routes/hotel");
+const userRoutes = require("./routes/userRoutes");
 // ============================================
 // 🗄️ DATABASE CONNECTION
 // ============================================
@@ -121,9 +123,12 @@ app.use("/countries", countryRoutes);
  * PUT    /visa/:id       - Update application (admin only)
  * DELETE /visa/:id       - Delete application (admin only)
  */
+
+app.use("/hotelBooking", hotelRoute);
 app.use("/visa", visaRoutes);
 app.use("/flights", flightRoutes);
-app.use("/carTrip", carTripsRoutes)
+app.use("/carTrip", carTripsRoutes);
+app.use("/users", userRoutes);
 // ============================================
 // 📊 STATS ENDPOINT (PUBLIC)
 // ============================================

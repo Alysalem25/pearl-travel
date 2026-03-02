@@ -13,11 +13,13 @@
     "@tanstack/react-query-devtools": "^5.91.2",
     "axios": "^1.13.2",
     "framer-motion": "^11.11.17",
+    "i18next": "^25.8.13",
     "lucide-react": "^0.562.0",
     "motion": "^12.27.0",
     "next": "16.1.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-i18next": "^16.5.4",
     "swiper": "^12.0.3"
   },
   "devDependencies": {

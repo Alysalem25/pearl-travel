@@ -8,7 +8,6 @@ import Navbar from '@/components/Navbar';
 import CountryHero from '@/components/country-hero';
 import Footer from '@/components/footer';
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import {
   Language,
   getDirection,

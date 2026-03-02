@@ -5,6 +5,7 @@ import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import Link from 'next/link'
 
 interface Flight {
     _id: string
@@ -48,7 +49,7 @@ const FlightsPageContent = () => {
     })
 
     const changeStatusMutation = useMutation({
-        mutationFn: ({ id, status }: { id: string; status: string}) => api.carTrips.changeStatus(id, status),
+        mutationFn: ({ id, status }: { id: string; status: string }) => api.carTrips.changeStatus(id, status),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cars'] })
     })
 
@@ -87,18 +88,18 @@ const FlightsPageContent = () => {
                                         <div className="text-xs text-gray-500">{c.createdAt ? new Date(c.createdAt).toLocaleString() : ''}</div>
                                         {c.status === "reviewed" && (
                                             <div className="text-xs text-green-600">
-                                                Reviewed by: {c.reviewedBy?.name}
+                                                <Link href={`/Admindashbord/users/${c.reviewedBy?._id}`}>Reviewed by: {c.reviewedBy?.name}</Link>
                                             </div>
-                                         )}
+                                        )}
                                     </div>
                                     <div className="flex gap-2">
-                              
-                                        
-                                            <button type='submit' onClick={() => changeStatusMutation.mutate({
-                                                id: c._id,
-                                                status: c.status === "pending" ? "reviewed" : "pending",
-                                            })}
-                                                className={` text-white px-3 py-1 rounded ${c.status === 'reviewed' ? 'bg-red-600' : 'bg-green-600'}`}>{c.status === 'reviewed' ? 'Pending' : 'Review'}</button>
+
+
+                                        <button type='submit' onClick={() => changeStatusMutation.mutate({
+                                            id: c._id,
+                                            status: c.status === "pending" ? "reviewed" : "pending",
+                                        })}
+                                            className={` text-white px-3 py-1 rounded ${c.status === 'reviewed' ? 'bg-red-600' : 'bg-green-600'}`}>{c.status === 'reviewed' ? 'Pending' : 'Review'}</button>
 
                                         <button onClick={() => deleteMutation.mutate(c._id)} className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
                                     </div>
