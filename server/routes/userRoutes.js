@@ -35,12 +35,22 @@ router.get('/:id/summary', authMiddleware, authorize('admin'), async (req, res, 
     const email = user.email;
     // parse optional query params
     const { start, end } = req.query;
-    const filter = { userEmail: email, status: 'reviewed' };
-    if (start || end) {
-      filter.updatedAt = {};
-      if (start) filter.updatedAt.$gte = new Date(String(start));
-      if (end) filter.updatedAt.$lte = new Date(String(end));
-    }
+
+    // Default range: from start of current month until now
+    const now = new Date();
+    const defaultStartOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const startDate = start ? new Date(String(start)) : defaultStartOfMonth;
+    const endDate = end ? new Date(String(end)) : now;
+
+    const filter = {
+      userEmail: email,
+      status: 'reviewed',
+      updatedAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    };
 
     const [
       reviewedFlightsCount,
@@ -54,7 +64,7 @@ router.get('/:id/summary', authMiddleware, authorize('admin'), async (req, res, 
       Visa.countDocuments({
         email: email,
         status: 'reviewed',
-        ...(filter.updatedAt ? { updatedAt: filter.updatedAt } : {})
+        updatedAt: filter.updatedAt
       })
     ]);
 
