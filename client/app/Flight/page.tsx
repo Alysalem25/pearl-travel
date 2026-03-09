@@ -399,7 +399,7 @@ export default function FlightSearch() {
     }
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!handelValidation()) return;
         setLoading(true);
@@ -420,6 +420,7 @@ export default function FlightSearch() {
                 to: "",
                 date: "",
                 returnDate: "",
+                tripType: "round",
                 numOfAdults: 1,
                 numOfChildren: 0,
                 cabinClass: "economy",
@@ -497,7 +498,7 @@ export default function FlightSearch() {
                 onChange={(e) =>
                     setFormData({
                         ...formData,
-                        numOfAdults: e.target.value,
+                        numOfAdults: parseInt(e.target.value, 10) || 0,
                     })
                 }
                 placeholder="Adults"
@@ -511,7 +512,7 @@ export default function FlightSearch() {
                 onChange={(e) =>
                     setFormData({
                         ...formData,
-                        numOfChildren: e.target.value,
+                        numOfChildren: parseInt(e.target.value, 10) || 0,
                     })
                 }
                 placeholder="Children"
@@ -573,7 +574,7 @@ export default function FlightSearch() {
                 onChange={(e) =>
                     setFormData({
                         ...formData,
-                        numOfAdults: e.target.value,
+                        numOfAdults: parseInt(e.target.value, 10) || 0,
                     })
                 }
                 placeholder="Adults"
@@ -587,7 +588,7 @@ export default function FlightSearch() {
                 onChange={(e) =>
                     setFormData({
                         ...formData,
-                        numOfChildren: e.target.value,
+                        numOfChildren: parseInt(e.target.value, 10) || 0,
                     })
                 }
                 placeholder="Children"
@@ -610,9 +611,9 @@ export default function FlightSearch() {
     // ================= MULTI CITY =================
     const MultiCityForm = () => {
 
-        const updateCity = (index, field, value) => {
+        const updateCity = (index: number, field: 'from' | 'to' | 'date', value: string) => {
             const updated = [...formData.multiCities];
-            updated[index][field] = value;
+            updated[index] = { ...updated[index], [field]: value };
             setFormData({ ...formData, multiCities: updated });
         };
 
@@ -701,7 +702,7 @@ export default function FlightSearch() {
                         onChange={(e) =>
                             setFormData({
                                 ...formData,
-                                numOfAdults: e.target.value,
+                                numOfAdults: parseInt(e.target.value, 10) || 0,
                             })
                         }
                         placeholder="Adults"
@@ -715,7 +716,7 @@ export default function FlightSearch() {
                         onChange={(e) =>
                             setFormData({
                                 ...formData,
-                                numOfChildren: e.target.value,
+                                numOfChildren: parseInt(e.target.value, 10) || 0,
                             })
                         }
                         placeholder="Children"
@@ -749,7 +750,7 @@ export default function FlightSearch() {
     //             onChange={(e) =>
     //                 setFormData({
     //                     ...formData,
-    //                     numOfAdults: e.target.value,
+    //                     numOfAdults: parseInt(e.target.value, 10) || 0,
     //                 })
     //             }
     //             placeholder="Adults"
@@ -763,7 +764,7 @@ export default function FlightSearch() {
     //             onChange={(e) =>
     //                 setFormData({
     //                     ...formData,
-    //                     numOfChildren: e.target.value,
+    //                     numOfChildren: parseInt(e.target.value, 10) || 0,
     //                 })
     //             }
     //             placeholder="Children"

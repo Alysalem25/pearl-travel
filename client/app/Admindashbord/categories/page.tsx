@@ -15,7 +15,14 @@ interface Category {
     images: string[]
     isActive: boolean
 }
-
+type CategoryPayload = {
+    nameEn: string
+    nameAr: string
+    type: string
+    country: string
+    images: string
+    isActive: boolean
+}
 export default function CategoriesPage() {
     return (
         <ProtectedRoute requiredRole="admin">
@@ -49,23 +56,40 @@ const CategoriesPageContent = () => {
     })
 
     // ================= MUTATION =================
-    const categoryMutation = useMutation({
-        mutationFn: (payload: typeof formData) =>
-            editingCategory
-                ? api.categories.update(editingCategory._id, payload)
-                : api.categories.create(payload),
+    // const categoryMutation = useMutation({
+    //     mutationFn: (payload: typeof formData) =>
+    //         editingCategory
+    //             ? api.categories.update(editingCategory._id, payload)
+    //             : api.categories.create(payload),
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['categories'] })
-            alert(editingCategory ? 'Category updated!' : 'Category added!')
-            resetForm()
-        },
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({ queryKey: ['categories'] })
+    //         alert(editingCategory ? 'Category updated!' : 'Category added!')
+    //         resetForm()
+    //     },
 
-        onError: (error: any) =>
-            alert(error.response?.data?.error || 'Error')
-    })
+    //     onError: (error: any) =>
+    //         alert(error.response?.data?.error || 'Error')
+    // })
 
 
+    // const categoryMutation = useMutation({
+    //     mutationFn: (payload: typeof formData) =>
+    //         editingCategory
+    //             ? api.categories.update(editingCategory._id, payload)
+    //             : api.categories.create(payload),
+
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({ queryKey: ['categories'] })
+    //         alert(editingCategory ? 'Category updated!' : 'Category added!')
+    //         resetForm()
+    //     },
+
+    //     onError: (error: any) =>
+    //         alert(error.response?.data?.error || 'Error')
+    // })
+
+    
     const deleteMutation = useMutation({
         mutationFn: (id: string) => api.categories.delete(id),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] })
@@ -96,15 +120,18 @@ const CategoriesPageContent = () => {
                 alert('Category updated!');
             } else {
                 const data = new FormData();
+
                 data.append('nameEn', formData.nameEn);
                 data.append('nameAr', formData.nameAr);
                 data.append('type', formData.type);
                 data.append('country', formData.country);
                 data.append('isActive', String(formData.isActive));
-                if (images.length > 0) data.append('images', images[0]);
+
+                if (images.length > 0) {
+                    data.append('images', images[0]);
+                }
 
                 await api.categories.create(data);
-                alert('Category added!');
             }
 
             queryClient.invalidateQueries({ queryKey: ['categories'] });

@@ -1,10 +1,16 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import AdminSidebar from '@/components/adminSidebar'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+
+type Reviewer = {
+    _id: string
+    name: string
+}
 
 interface Flight {
     _id: string
@@ -15,7 +21,7 @@ interface Flight {
     to?: string
     status: 'pending' | 'reviewed'
     createdAt?: string
-    reviewedBy?: string
+    reviewedBy?: Reviewer | string | null
 }
 
 export default function FlightsPage() {
@@ -28,7 +34,7 @@ export default function FlightsPage() {
 
 const FlightsPageContent = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
-    // const [reviewedBy, setReviewedBy] = useState<Record<string, string>>({});
+    const [reviewedBy, setReviewedBy] = useState<Record<string, string>>({});
     const queryClient = useQueryClient()
 
     const { data: flights = [], isLoading } = useQuery({
@@ -81,7 +87,13 @@ const FlightsPageContent = () => {
                                         <div className="text-xs text-gray-500">{f.createdAt ? new Date(f.createdAt).toLocaleString() : ''}</div>
                                         {f.status === "reviewed" && (
                                             <div className="text-xs text-green-600">
-                                                Reviewed by: {f.reviewedBy}
+                                                {f.reviewedBy && typeof f.reviewedBy === 'object' && '_id' in f.reviewedBy ? (
+                                                    <Link href={`/Admindashbord/users/${(f.reviewedBy as Reviewer)._id}`}>
+                                                        Reviewed by: {(f.reviewedBy as Reviewer).name}
+                                                    </Link>
+                                                ) : (
+                                                    <>Reviewed by: {typeof f.reviewedBy === 'string' ? f.reviewedBy : 'Unknown'}</>
+                                                )}
                                             </div>
                                         )}
                                     </div>

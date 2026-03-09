@@ -52,20 +52,20 @@ router.delete("/:id", authMiddleware, authorize("admin"), async (req, res, next)
 
 // update car trip status
 router.put("/:id/status", authMiddleware, authorize("admin"), async (req, res, next) => {
-    try {
-        const { status } = req.body;
-        if (!["pending", "reviewed"].includes(status)) {
-            return res.status(400).json({ error: "Invalid status value" });
-        }
-        const booking = await HotelBooking.findByIdAndUpdate(
-            req.params.id,
-            { status: status === "pending" ? "pending" : "reviewed", reviewedBy: req.user.id },
-            { new: true, runValidators: true }
-        );
-        if (!booking) return res.status(404).json({ error: "Hotel booking not found" });
-        res.json(booking);
-    } catch (err) {
-        next(err);
+  try {
+    const { status } = req.body;
+    if (!["pending", "reviewed"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
     }
+    const booking = await HotelBooking.findByIdAndUpdate(
+      req.params.id,
+      { status: status === "pending" ? "pending" : "reviewed" , reviewedBy: req.user.id },
+      { new: true, runValidators: true }
+    );
+    if (!booking) return res.status(404).json({ error: "Hotel booking not found" });
+    res.json(booking);
+  } catch (err) {
+    next(err);
+  }
 });
 module.exports = router;

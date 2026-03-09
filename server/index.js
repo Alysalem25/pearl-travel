@@ -68,6 +68,9 @@ const flightRoutes = require("./routes/flightRoutes");
 const carTripsRoutes = require("./routes/carTrip");
 const hotelRoute = require("./routes/hotel");
 const userRoutes = require("./routes/userRoutes");
+const cruiseRoutes = require("./routes/cruiseRoutes");
+
+
 // ============================================
 // 🗄️ DATABASE CONNECTION
 // ============================================
@@ -129,6 +132,7 @@ app.use("/visa", visaRoutes);
 app.use("/flights", flightRoutes);
 app.use("/carTrip", carTripsRoutes);
 app.use("/users", userRoutes);
+app.use("/cruisies", cruiseRoutes);
 // ============================================
 // 📊 STATS ENDPOINT (PUBLIC)
 // ============================================
@@ -140,6 +144,8 @@ const Visa = require("./models/Visa");
 const Flights = require("./models/Flights");
 const BookedPrograms = require("./models/BookedPrograms");
 const CarTrips = require("./models/CarsTrips")
+const Cruisies = require("./models/Cruisies");
+
 app.get("/stats", async (req, res, next) => {
   try {
     const [

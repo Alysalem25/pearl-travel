@@ -95,8 +95,7 @@ router.post(
   authMiddleware,
   authorize("admin"),
   uploadCountry.array("images", 1),
-  //   validateCategory,
-  handleValidationErrors,
+   handleValidationErrors,
   async (req, res, next) => {
     try {
       const {
@@ -275,4 +274,38 @@ router.get("/inToCountry", async (req, res, next) => {
     next(err);
   }
 });
+
+router.post(
+  "/:id/images",
+  authMiddleware,
+  authorize("admin"),
+  uploadCountry.array("images", 1),
+  async (req, res, next) => {
+    try {
+      const contry = await Country.findById(req.params.id);
+
+      if (!contry) {
+        return res.status(404).json({ error: "contry not found" });
+      }
+
+      const images = (req.files || []).map(f => f.filename);
+      contry.images.push(...images);
+
+      await contry.save();
+
+      const response = {
+        ...contry.toObject(),
+        images: contry.images ? contry.images.map(normalizeImagePath) : []
+      };
+
+      res.json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+
+
+
 module.exports = router;    

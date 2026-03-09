@@ -7,7 +7,7 @@
  * Security: Logout clears all auth data and redirects to home
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Menu, X, Globe, BarChart3 } from "lucide-react";
@@ -17,7 +17,7 @@ import { getLanguageFromSearchParams, updateLanguage } from "@/lib/language";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Navbar() {
+function NavbarContent() {
   const [open, setOpen] = useState(false);
   const [destinationsDropdown, setDestinationsDropdown] = useState(false);
   const [langDropdown, setLangDropdown] = useState(false);
@@ -94,9 +94,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full bg-transparent backdrop-blur-xl shadow-md z-50 ${
-        isRTL ? "font-arabic" : ""
-      }`}
+      className={`fixed top-0 left-0 w-full bg-transparent backdrop-blur-xl shadow-md z-50 ${isRTL ? "font-arabic" : ""
+        }`}
       dir={direction}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,9 +149,8 @@ export default function Navbar() {
                 {t.navbar.destinations}
                 <ChevronDown
                   size={16}
-                  className={`transition-transform duration-200 ${
-                    destinationsDropdown ? "rotate-180" : ""
-                  }`}
+                  className={`transition-transform duration-200 ${destinationsDropdown ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -163,9 +161,8 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute ${
-                      isRTL ? "left-0" : "right-0"
-                    } top-full mt-2 bg-white dark:bg-gray-800 backdrop-blur-xl shadow-lg rounded-lg w-40 overflow-hidden`}
+                    className={`absolute ${isRTL ? "left-0" : "right-0"
+                      } top-full mt-2 bg-white dark:bg-gray-800 backdrop-blur-xl shadow-lg rounded-lg w-40 overflow-hidden`}
                   >
                     <Link
                       href={`/Egypt?lang=${lang}`}
@@ -197,7 +194,7 @@ export default function Navbar() {
             <div className="relative ml-4" data-dropdown="language">
               <button
                 onClick={() => changeLang(lang === "en" ? "ar" : "en")}
-                className="flex items-center gap-2 px-4 py-2 dark:bg-[var(--mainColor)] text-white rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium shadow-md"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium shadow-md"
               >
                 <Globe size={18} />
                 <span>{lang === "en" ? "AR" : "EN"}</span>
@@ -215,7 +212,7 @@ export default function Navbar() {
                     {user?.role === "admin" ? "Admin" : "User"}
                   </p>
                 </div>
-                
+
                 {isAdmin() && (
                   <Link
                     href={`/Admindashbord?lang=${lang}`}
@@ -321,21 +318,19 @@ export default function Navbar() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => changeLang("en")}
-                      className={`flex-1 px-4 py-2 rounded-lg transition-colors duration-200 font-medium ${
-                        lang === "en"
+                      className={`flex-1 px-4 py-2 rounded-lg transition-colors duration-200 font-medium ${lang === "en"
                           ? "bg-blue-600 text-white"
                           : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      }`}
+                        }`}
                     >
                       English
                     </button>
                     <button
                       onClick={() => changeLang("ar")}
-                      className={`flex-1 px-4 py-2 rounded-lg transition-colors duration-200 font-medium ${
-                        lang === "ar"
+                      className={`flex-1 px-4 py-2 rounded-lg transition-colors duration-200 font-medium ${lang === "ar"
                           ? "bg-blue-600 text-white"
                           : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      }`}
+                        }`}
                     >
                       العربية
                     </button>
@@ -353,7 +348,7 @@ export default function Navbar() {
                         {user?.role === "admin" ? "Admin" : "User"}
                       </p>
                     </div>
-                    
+
                     {isAdmin() && (
                       <Link
                         href={`/Admindashbord?lang=${lang}`}
@@ -364,8 +359,8 @@ export default function Navbar() {
                         Dashboard
                       </Link>
                     )}
-                    
-                    <button
+
+                    {/* <button
                       onClick={() => {
                         logout();
                         setOpen(false);
@@ -375,7 +370,7 @@ export default function Navbar() {
                     >
                       <LogOut size={16} />
                       Logout
-                    </button>
+                    </button> */}
                   </div>
                 ) : (
                   <Link
@@ -392,5 +387,13 @@ export default function Navbar() {
         </AnimatePresence>
       </div>
     </nav>
+  );
+}
+
+export default function Navbar() {
+  return (
+    <Suspense fallback={<div className="h-16 w-full bg-transparent backdrop-blur-xl shadow-md z-50 fixed top-0 left-0" />}>
+      <NavbarContent />
+    </Suspense>
   );
 }

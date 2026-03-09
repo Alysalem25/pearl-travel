@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer";
@@ -40,6 +40,7 @@ type StepTwoErrors = {
 const INITIAL_STEP_ONE_FORM: VisaStepOneForm = {
   name: "",
   phone: "",
+  email: "",
   destination: "",
   otherCountries: "",
 };
@@ -62,7 +63,7 @@ interface Country {
 }
 
 
-export default function VisaPage() {
+function VisaContent() {
   const [lang, setLang] = useState<Language>("en");
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState<VisaStep>(1);
@@ -627,8 +628,8 @@ export default function VisaPage() {
                     </button>
                   </div>
                 </div>
-                )}
-              </motion.div>
+              )}
+            </motion.div>
           </>
         )}
       </AnimatePresence>
@@ -636,5 +637,10 @@ export default function VisaPage() {
   );
 }
 
-
-
+export default function VisaPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <VisaContent />
+    </Suspense>
+  );
+}

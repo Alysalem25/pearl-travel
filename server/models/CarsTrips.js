@@ -21,7 +21,8 @@ const CarsTripsSchema = new mongoose.Schema(
       required: true
     },
     status: { type: String, enum: ["pending", "reviewed"], default: "pending" },
-    reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    reviewedBy: { type: mongoose.Schema.Types.ObjectId,
+       ref: "User" }
   },
   { timestamps: true }
 );

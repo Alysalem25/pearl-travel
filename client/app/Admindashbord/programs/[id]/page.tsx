@@ -12,10 +12,20 @@ import 'swiper/css/navigation';
 
 import './styles.css';
 
+interface ProgramDay {
+    titleEn: string;
+    titleAr: string;
+    descriptionEn: string;
+    descriptionAr: string;
+}
+
 interface Program {
     titleEn: string;
     titleAr: string;
+    descriptionEn: string;
+    descriptionAr: string;
     durationDays: number;
+    days: ProgramDay[];
     country: string;
     price: number;
     images: string[];
@@ -148,7 +158,7 @@ const ProgramPageContent = () => {
                                         </div>
                                         <div className="flex justify-between items-center border-b border-gray-700 pb-2">
                                             <span className="font-semibold">Description:</span>
-                                            <span className="text-green-400 font-bold text-lg">${program.descriptionEn}</span>
+                                            <span className="text-green-400 font-bold text-lg">${program?.descriptionEn}</span>
                                         </div>
                                          
                                          <div className="flex justify-between items-center border-b border-gray-700 pb-2">

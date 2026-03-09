@@ -723,8 +723,9 @@ function ProgramsPageContent() {
     }
 
     const updateDay = (i: number, field: keyof Day, value: string) => {
-        const copy = [...days]
-        copy[i][field] = value as any
+        const copy = days.map((d, idx) =>
+            idx === i ? { ...d, [field]: value } : d
+        )
         setDays(copy)
     }
 
@@ -777,6 +778,32 @@ function ProgramsPageContent() {
         ])
         setEditingProgram(null)
         setShowForm(false)
+    }
+
+    const startEdit = (p: Program) => {
+        setEditingProgram(p)
+        setFormData({
+            titleEn: p.titleEn,
+            titleAr: p.titleAr,
+            category: typeof p.category === 'object' && p.category ? p.category._id : '',
+            country: p.country,
+            durationDays: p.durationDays,
+            durationNights: p.durationNights ?? 0,
+            price: p.price,
+            descriptionEn: p.descriptionEn ?? '',
+            descriptionAr: p.descriptionAr ?? '',
+            itineraryEn: p.itineraryEn ?? '',
+            itineraryAr: p.itineraryAr ?? '',
+            status: p.status,
+        })
+        setImages([])
+        setPreviewImages((p.images || []).map((img) => `http://localhost:5000${img}`))
+        setDays(
+            p.days?.length
+                ? p.days.map((d, idx) => ({ ...d, dayNumber: idx + 1 }))
+                : [{ dayNumber: 1, titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '' }]
+        )
+        setShowForm(true)
     }
 
     // ================= UI =================

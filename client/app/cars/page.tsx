@@ -60,7 +60,7 @@ const Page = () => {
       setError("Please select a car type");
       return;
     }
-    if (formData.from === "" || formData.to === "" || formData.date === "" || formData.returnDate === "" || formData.userEmail === "" || formData.userName === "" || formData.userNumber === "" || formData.numOfAdults === 0 || formData.numOfLuggage === 0 || formData.remarks === "") {
+    if (formData.from === "" || formData.to === "" || formData.date === "") {
       setError("Please fill all the fields");
       return;
     }

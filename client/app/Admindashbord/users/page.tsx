@@ -108,7 +108,7 @@ const UsersPageContent = () => {
             number: '',
             role: '',
             inTeam: false,
-            image: '',
+            images: '',
         })
         setPreviewImages([])
         setEditingUser(null)

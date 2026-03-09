@@ -14,7 +14,8 @@ export interface NavbarTranslations {
   egypt: string;
   albania: string;
   cars: string;
-  hotel: string;  
+  hotel: string;
+  contact: string;
 }
 
 export interface HomePageTranslations {
@@ -57,6 +58,7 @@ export const translations: Record<Language, Translations> = {
       albania: "Albania",
       cars: "Cars",
       hotel: "Hotel",
+      contact: "Contact",
     },
     home: {
       heading: "Let the Journey Begin",
@@ -94,6 +96,7 @@ export const translations: Record<Language, Translations> = {
       albania: "ألبانيا",
       cars: "سيارات",
       hotel: "فنادق",
+      contact: "اتصل بنا",
     },
     home: {
       heading: "لتبدأ الرحلة",

@@ -7,7 +7,12 @@ import { api } from '@/lib/api'
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import Link from 'next/link'
 
-interface Flight {
+interface CarTripReviewer {
+    _id: string
+    name: string
+}
+
+interface Car {
     _id: string
     userEmail: string
     userName?: string
@@ -15,14 +20,9 @@ interface Flight {
     from?: string
     to?: string
     date?: string
-    isReturn?: boolean
-    returnDate?: string
-    numOfAdults?: number
-    numOfLuggage?: number
-    carType?: string
     status: 'pending' | 'reviewed'
     createdAt?: string
-    reviewedBy?: string
+    reviewedBy?: CarTripReviewer
 }
 
 export default function FlightsPage() {

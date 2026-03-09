@@ -9,7 +9,7 @@ interface TeamMember {
     name: string
     role: string
     number?: string
-    image?: string
+    images?: string[]
     video?: string
 }
 

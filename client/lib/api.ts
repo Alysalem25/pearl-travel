@@ -13,6 +13,16 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios";
 import { getAuthToken, clearAuthData } from "./auth";
 
+
+type CategoryPayload = {
+  nameEn: string
+  nameAr: string
+  type: string
+  country: string
+  images: string
+  isActive: boolean
+}
+
 // Create axios instance with base URL
 const apiClient: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
@@ -51,9 +61,9 @@ apiClient.interceptors.response.use(
       clearAuthData();
 
       // Only redirect in client-side (not during SSR)
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      // if (typeof window !== "undefined") {
+      //   window.location.href = "/login";
+      // }
 
       return Promise.reject({
         ...error,
@@ -141,7 +151,6 @@ export const api = {
       apiClient.post("/categories", data, {
         headers: { "Content-Type": "multipart/form-data" }
       }),
-
     update: (id: string, data: any) =>
       apiClient.put(`/categories/${id}`, data),
 
@@ -185,7 +194,7 @@ export const api = {
   // countries endpoints
   countries: {
     getAll: () => apiClient.get("/countries"),
-    getInVisa:() => apiClient.get("/countries/inVisa"),
+    getInVisa: () => apiClient.get("/countries/inVisa"),
     getOne: (id: string) => apiClient.get(`/countries/${id}`),
     create: (data: FormData) =>
       apiClient.post("/countries", data, {
@@ -194,8 +203,12 @@ export const api = {
     update: (id: string, data: any) =>
       apiClient.put(`/countries/${id}`, data),
     delete: (id: string) =>
-      apiClient.delete(`/countries/${id}`)
-  }, 
+      apiClient.delete(`/countries/${id}`),
+    addImages: (id: string, files: FormData) =>
+      apiClient.post(`/countries/${id}/images`, files, {
+        headers: { "Content-Type": "multipart/form-data" }
+      })
+  },
 
   // flights endpoints
   flights: {
@@ -212,9 +225,8 @@ export const api = {
       apiClient.post("/programs/book", data),
     getAll: () => apiClient.get("/programs/booked"),
     delete: (id: string) => apiClient.delete(`/programs/booked/${id}`),
-    changeStatus: (id: string, status: string, ) => apiClient.put(`/programs/booked/${id}/status`, { status })
+    changeStatus: (id: string, status: string,) => apiClient.put(`/programs/booked/${id}/status`, { status })
   },
-
 
   // car trips endpoints
   carTrips: {
@@ -233,6 +245,24 @@ export const api = {
     delete: (id: string) => apiClient.delete(`/hotelBooking/${id}`),
     changeStatus: (id: string, status: string, reviewedBy?: string) =>
       apiClient.put(`/hotelBooking/${id}/status`, { status, reviewedBy })
+  },
+
+  // cruisies endpoints
+  cruisies: {
+    getAll: () => apiClient.get("/cruisies"),
+    getOne: (id: string) => apiClient.get(`/cruisies/${id}`),
+    create: (data: FormData) =>
+      apiClient.post("/cruisies", data, {
+        headers: { "Content-Type": "multipart/form-data" }
+      }),
+    update: (id: string, data: any) =>
+      apiClient.put(`/cruisies/${id}`, data),
+    delete: (id: string) =>
+      apiClient.delete(`/cruisies/${id}`),
+    addImages: (id: string, files: FormData) =>
+      apiClient.post(`/cruisies/${id}/images`, files, {
+        headers: { "Content-Type": "multipart/form-data" }
+      })
   },
 
   /**

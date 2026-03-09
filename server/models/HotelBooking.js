@@ -17,7 +17,10 @@ const hotelBookingSchema = new mongoose.Schema({
     userPhone: { type: String, required: true, trim: true },
     remarks: String,
     status: { type: String, enum: ["pending", "reviewed"], default: "pending" },
-    reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    reviewedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("HotelBooking", hotelBookingSchema);

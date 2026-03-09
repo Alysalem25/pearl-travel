@@ -3,8 +3,8 @@
  * Handles language detection from URL params and localStorage
  */
 
-import { Language } from "@/data/translations";
-
+import type { Language } from "@/data/translations";
+export type { Language };
 /**
  * Get language from URL search params
  * Falls back to localStorage, then defaults to 'en'

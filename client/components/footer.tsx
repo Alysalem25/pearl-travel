@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { translations, Language } from "@/data/translations";
 import { getDirection, getLanguageFromSearchParams } from "@/lib/language";
@@ -8,7 +8,7 @@ import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, MessageCir
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export default function Footer() {
+function FooterContent() {
   const [lang, setLang] = useState<Language>("en");
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
@@ -172,7 +172,7 @@ export default function Footer() {
                 className="p-2 rounded-full bg-gray-700 hover:bg-green-500 transition-colors duration-200"
                 aria-label="WhatsApp"
               >
-                <Phone size={19} className="text-white"/>
+                <Phone size={19} className="text-white" />
               </a>
               <a
                 href="https://www.instagram.com/pearltravel1?igsh=MTBsaXdtMGhtcGxseg=="
@@ -230,5 +230,13 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+export default function Footer() {
+  return (
+    <Suspense fallback={<div className="h-64 w-full bg-gradient-to-r from-gray-900 to-gray-800" />}>
+      <FooterContent />
+    </Suspense>
   );
 }

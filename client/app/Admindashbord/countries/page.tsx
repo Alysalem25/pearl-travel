@@ -13,8 +13,8 @@ interface Country {
     country: string
     images: string[]
     inVisa: boolean
-    inFromCountry:boolean,
-    inToCountry:boolean,
+    inFromCountry: boolean,
+    inToCountry: boolean,
 }
 
 export default function CountryPage() {
@@ -37,8 +37,8 @@ const CountryPageContent = () => {
         nameAr: '',
         images: '',
         inVisa: false,
-        inFromCountry:false,
-        inToCountry:false,
+        inFromCountry: false,
+        inToCountry: false,
     })
 
     const queryClient = useQueryClient()
@@ -53,21 +53,21 @@ const CountryPageContent = () => {
     console.log(countries)
 
     // ================= MUTATION =================
-    const countryMutation = useMutation({
-        mutationFn: (payload: typeof formData) =>
-            editingCountry
-                ? api.countries.update(editingCountry._id, payload)
-                : api.countries.create(payload),
+    // const countryMutation = useMutation({
+    //     mutationFn: (payload: typeof formData) =>
+    //         editingCountry
+    //             ? api.countries.update(editingCountry._id, payload)
+    //             : api.countries.create(payload),
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['countries'] })
-            alert(editingCountry ? 'Country updated!' : 'Country added!')
-            resetForm()
-        },
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({ queryKey: ['countries'] })
+    //         alert(editingCountry ? 'Country updated!' : 'Country added!')
+    //         resetForm()
+    //     },
 
-        onError: (error: any) =>
-            alert(error.response?.data?.error || 'Error')
-    })
+    //     onError: (error: any) =>
+    //         alert(error.response?.data?.error || 'Error')
+    // })
 
 
     const deleteMutation = useMutation({
@@ -77,9 +77,51 @@ const CountryPageContent = () => {
 
 
     // ================= HANDLERS =================
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault()
+    //     alert("Submitting form...") // Debugging alert to confirm form submission
+
+    //     try {
+    //         if (editingCountry) {
+    //             // If a new image was selected while editing, upload it first
+    //             if (images.length > 0) {
+    //                 const imgForm = new FormData();
+    //                 imgForm.append('images', images[0]);
+    //                 await api.countries.addImages(editingCountry._id, imgForm);
+    //             }
+
+    //             await api.countries.update(editingCountry._id, {
+    //                 nameEn: formData.nameEn,
+    //                 nameAr: formData.nameAr,
+    //                 inVisa: formData.inVisa,
+    //                 inFromCountry: formData.inFromCountry,
+    //                 inToCountry: formData.inToCountry
+    //             });
+
+    //             alert('Country updated!');
+    //         } else {
+    //             const data = new FormData();
+    //             data.append('nameEn', formData.nameEn);
+    //             data.append('nameAr', formData.nameAr);
+    //             data.append('inVisa', String(formData.inVisa));
+    //             data.append('inFromCountry', String(formData.inFromCountry));
+    //             data.append('inToCountry', String(formData.inToCountry));
+    //             if (images.length > 0) data.append('images', images[0]);
+
+    //             await api.countries.create(data);
+    //             alert('Country added!');
+    //         }
+
+    //         queryClient.invalidateQueries({ queryKey: ['countries'] });
+    //         resetForm();
+    //     } catch (err: any) {
+    //         console.log(err)
+    //         setError(err.response?.data?.error || 'Error');
+    //     }
+    // }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        alert("Submitting form...") // Debugging alert to confirm form submission
 
         try {
             if (editingCountry) {
@@ -91,16 +133,16 @@ const CountryPageContent = () => {
                 }
 
                 await api.countries.update(editingCountry._id, {
-                    nameEn: formData.nameEn,
+              nameEn: formData.nameEn,
                     nameAr: formData.nameAr,
                     inVisa: formData.inVisa,
                     inFromCountry: formData.inFromCountry,
                     inToCountry: formData.inToCountry
                 });
 
-                alert('Country updated!');
+                alert('Category updated!');
             } else {
-                const data = new FormData();
+             const data = new FormData();
                 data.append('nameEn', formData.nameEn);
                 data.append('nameAr', formData.nameAr);
                 data.append('inVisa', String(formData.inVisa));
@@ -119,7 +161,6 @@ const CountryPageContent = () => {
             setError(err.response?.data?.error || 'Error');
         }
     }
-
     const resetForm = () => {
         setFormData({
             nameEn: '',
@@ -190,7 +231,7 @@ const CountryPageContent = () => {
                     </button>
                 </header>
 
-                    <hr className="border-gray-300" />
+                <hr className="border-gray-300" />
 
                 {showForm && (
                     <div className="bg-gray-200 m-6 p-6 rounded-lg">
@@ -265,7 +306,7 @@ const CountryPageContent = () => {
 
                 <div className="m-6 p-6">
                     <h2 className="text-xl font-bold mb-4">Available Countries ({countries.length})</h2>
-                    <div className="flex flex-wrap gap-6 justify-start"> 
+                    <div className="flex flex-wrap gap-6 justify-start">
                         {countries.map((p: Country) => {
                             const imageUrl =
                                 p.images && p.images.length > 0

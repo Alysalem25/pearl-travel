@@ -129,7 +129,7 @@ router.get("/", authMiddleware, authorize("admin"), async (req, res, next) => {
             to: f.to ? (f.to.nameEn || f.to) : null,
             status: f.status,
             createdAt: f.createdAt,
-            reviewedBy: f.reviewedBy
+            reviewedBy: f.reviewedBy ? { _id: f.reviewedBy._id, name: f.reviewedBy.name } : null
 
         })));
     } catch (err) {
