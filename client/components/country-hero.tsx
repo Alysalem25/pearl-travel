@@ -199,11 +199,16 @@ export default function Hero({ country }: { country?: { nameEn: string; nameAr: 
   };
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden z-10 "
+      className="relative flex items-center justify-center overflow-hidden z-10 "
+      style={
+        {
+          minHeight: "443px",
+        }
+      }
       dir={direction}
     >
       {/* Background Video */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10" >
         <video autoPlay muted loop className="w-full h-full object-cover">
           <source src={urlVideo} type="video/mp4" />
         </video>
@@ -220,7 +225,7 @@ export default function Hero({ country }: { country?: { nameEn: string; nameAr: 
         className={`text-white font-bold text-6xl ${isRTL ? "font-arabic" : ""}`}
       >
         {country ? (lang === "ar" ? country.nameAr : country.nameEn) : data[lang][params.id as "Egypt" | "Albania"]}
-      </motion.h1>
-    </section>
+      </motion.h1 >
+    </section >
   );
 }

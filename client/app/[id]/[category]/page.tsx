@@ -101,6 +101,7 @@ const Page = () => {
               <div
                 className="
                 h-[300px]
+                m-6
                 rounded-[30px]
                 bg-cover bg-center
                 flex items-end justify-center
