@@ -1,0 +1,14 @@
+.item_div:hover {
+    background-color: black;
+    transform: translateY(-30px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.item_div:hover .item_name {
+    color: white;
+}
+
+.item_div:hover .item_description {
+    color: white;
+}

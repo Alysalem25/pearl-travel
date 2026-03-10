@@ -216,5 +216,15 @@ router.delete("/:id", authMiddleware,
   }
 )
 
+//  get all cruises by category
+router.get("/category/:category", async (req, res, next) => {
+  try {
+    const cruises = await Cruisies.find({ category: req.params.category });
+    res.json(cruises);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // export router so it can be used in index.js
 module.exports = router;
