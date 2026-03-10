@@ -15,6 +15,11 @@ services:
       - mongodb_data:/data/db
     networks:
       - pearl_travel_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   server:
     build:
@@ -39,7 +44,7 @@ services:
     networks:
       - pearl_travel_network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health"]
       interval: 10s
       timeout: 5s
       retries: 5

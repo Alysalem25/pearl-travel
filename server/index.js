@@ -84,6 +84,42 @@ mongoose
   });
 
 // ============================================
+// 🏥 HEALTH CHECK ROUTES
+// ============================================
+
+/**
+ * Basic health check endpoint
+ * Used by Docker healthcheck and load balancers
+ */
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+/**
+ * Database health check endpoint
+ * Returns database connection status
+ */
+app.get("/health/db", (req, res) => {
+  const mongoState = mongoose.connection.readyState;
+  const states = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting"
+  };
+  const isHealthy = mongoState === 1;
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? "healthy" : "unhealthy",
+    database: states[mongoState],
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ============================================
 // 📡 API ROUTES
 // ============================================
 
