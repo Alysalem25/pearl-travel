@@ -83,11 +83,6 @@ services:
     depends_on:
       - client
       - server
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      # Uncomment and add your SSL certificates when ready
-      # - ./certs/cert.pem:/etc/nginx/ssl/cert.pem:ro
-      # - ./certs/key.pem:/etc/nginx/ssl/key.pem:ro
     networks:
       - pearl_travel_network
     healthcheck:
