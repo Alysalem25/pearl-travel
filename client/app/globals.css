@@ -177,6 +177,21 @@ svg {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+@media (max-width: 768px) {
+  .button_img1, .button_img2 {
+    width: 200px;
+    height: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .button_img1, .button_img2 {
+    width:200px;
+    height: 180px;
+    border-radius: 20px;
+  }
+}
+
 .button_img1 {
   background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0, 0, 0, 0.627)), url("/OIP.webp");
 }

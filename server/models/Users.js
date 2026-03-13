@@ -29,10 +29,16 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "user"],
       default: "user"
     },
-    inTeam:{
+    inTeam: {
       type: Boolean,
-      default:false,
+      default: false,
     },
+
+    roleInTeam: {
+      type: String,
+      required: function () { return this.inTeam; }
+    },
+
     images: [String], // array of image filenames
 
   },

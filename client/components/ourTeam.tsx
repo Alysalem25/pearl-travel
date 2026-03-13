@@ -8,6 +8,7 @@ interface TeamMember {
     _id: string
     name: string
     role: string
+    roleInTeam: string
     number?: string
     images?: string[]
     video?: string
@@ -79,7 +80,7 @@ const OurTeam = () => {
                                     </h3>
 
                                     <p className="text-red-500 font-medium mb-2">
-                                        {member.role}
+                                        {member.roleInTeam}
                                     </p>
 
                                     {/* {member.number && (
@@ -88,14 +89,6 @@ const OurTeam = () => {
                                         </p>
                                     )} */}
 
-                                    {/* Video (optional) */}
-                                    {member.video && (
-                                        <video
-                                            src={`http://localhost:5000${member.video}`}
-                                            controls
-                                            className="mt-4 w-full rounded-lg"
-                                        />
-                                    )}
                                 </div>
                             </div>
                         )

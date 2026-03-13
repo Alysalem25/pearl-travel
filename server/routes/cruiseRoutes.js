@@ -4,7 +4,7 @@ const uploadCruisies = require("../middlewares/uploadCruisies");
 const authMiddleware = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorizeMiddleware");
 const Cruisies = require("../models/Cruisies");
-// const Cruisies = require("../models/BookedPrograms");
+const BookedCruisies = require("../models/BookedCruseies");
 const router = express.Router();
 
 /**
@@ -33,25 +33,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-/**
- * GET /cruisies/:id
- * Get single cruise by ID - PUBLIC ROUTE
- */
-router.get("/:id", async (req, res, next) => {
-  try {
-    const cruise = await Cruisies.findById(req.params.id);
-    if (!cruise) {
-      return res.status(404).json({ error: "Cruise not found" });
-    }
-    const response = {
-      ...cruise.toObject(),
-      images: cruise.images ? cruise.images.map(normalizeImagePath) : []
-    };
-    res.json(response);
-  } catch (err) {
-    next(err);
-  }
-});
+
 
 /**
  * POST /cruisies
@@ -216,15 +198,90 @@ router.delete("/:id", authMiddleware,
   }
 )
 
-//  get all cruises by category
-router.get("/category/:category", async (req, res, next) => {
+router.get("/type/:type", async (req, res) => {
   try {
-    const cruises = await Cruisies.find({ category: req.params.category });
-    res.json(cruises);
+
+    const type =
+      req.params.type.charAt(0).toUpperCase() +
+      req.params.type.slice(1).toLowerCase();
+
+    const cruises = await Cruisies.find({
+      category: type,
+      status: "active"
+    });
+
+    const normalized = cruises.map(c => ({
+      ...c.toObject(),
+      images: c.images ? c.images.map(normalizeImagePath) : []
+    }));
+
+    res.json(normalized);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// book a cruise
+router.post("/book", async (req, res) => {
+  try {
+    const { userEmail, userName, userNumber, message, cruiseId } = req.body;
+
+    const bookedCruisies = new BookedCruisies({
+      userEmail,
+      userName,
+      userNumber,
+      message,
+      cruisies: cruiseId, // map frontend value
+    });
+
+    await bookedCruisies.save();
+
+    res.json({
+      success: true,
+      message: "Booking created successfully",
+      data: bookedCruisies
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+
+// get all booked cruises
+router.get("/book", async (req, res) => {
+  try {
+    const bookedCruisies = await BookedCruisies.find().populate("cruisies");
+    res.json(bookedCruisies); // must be an array
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/**
+ * GET /cruisies/:id
+ * Get single cruise by ID - PUBLIC ROUTE
+ */
+router.get("/:id", async (req, res, next) => {
+  try {
+    const cruise = await Cruisies.findById(req.params.id);
+    if (!cruise) {
+      return res.status(404).json({ error: "Cruise not found" });
+    }
+    const response = {
+      ...cruise.toObject(),
+      images: cruise.images ? cruise.images.map(normalizeImagePath) : []
+    };
+    res.json(response);
   } catch (err) {
     next(err);
   }
 });
-
 // export router so it can be used in index.js
 module.exports = router;

@@ -139,6 +139,12 @@ function NavbarContent() {
             >
               {t.navbar.hotel}
             </Link>
+            <Link
+              href={`/cruisies?lang=${lang}`}
+              className="text-gray-700 dark:text-gray-300 hover:text-[var(--mainColor)] transition-colors duration-200 font-medium"
+            >
+              {t.navbar.cruisies}
+            </Link>
 
             {/* Dropdown */}
             <div className="relative" data-dropdown="destinations">

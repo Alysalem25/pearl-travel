@@ -20,6 +20,7 @@ interface User {
     role: string
     images: string[]
     inTeam: boolean
+    roleInTeam: string
 }
 
 export default function UsersPage() {
@@ -45,6 +46,7 @@ const UsersPageContent = () => {
         role: '',
         images: '',
         inTeam: false,
+        roleInTeam:','
     })
 
     const { register, isAuthenticated } = useAuth();
@@ -88,6 +90,7 @@ const UsersPageContent = () => {
             newUser.append('number', formData.number)
             newUser.append('role', formData.role)
             newUser.append('inTeam', String(formData.inTeam))
+            newUser.append('roleInTeam', formData.roleInTeam)
             if (images.length > 0) newUser.append('images', images[0]);
             await addUserMutation.mutateAsync(newUser)
 
@@ -108,6 +111,7 @@ const UsersPageContent = () => {
             number: '',
             role: '',
             inTeam: false,
+            roleInTeam: '',
             images: '',
         })
         setPreviewImages([])
@@ -257,6 +261,22 @@ const UsersPageContent = () => {
                                     />
                                     In Team
                                 </label>
+
+                                {
+                                    formData.inTeam && (
+                                        <div>
+                                            <label className="flex items-center gap-2 text-black">
+                                                <input
+                                                    type="text"
+                                                    value={formData.roleInTeam}
+                                                    onChange={e => setFormData({ ...formData, roleInTeam: e.target.value })}
+                                                    className="form-checkbox h-5 w-5 text-blue-600"
+                                                />
+                                                In Team
+                                            </label>
+                                        </div>
+                                    )
+                                }
 
                                 {/* image upload */}
                                 <div className="mt-2">

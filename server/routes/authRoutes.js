@@ -32,7 +32,7 @@ router.post(
   handleValidationErrors,
   async (req, res, next) => {
     try {
-      const { name, email, password, number, role, inTeam } = req.body;
+      const { name, email, password, number, role, inTeam , roleInTeam } = req.body;
 
       // Check if user already exists
       const existingUser = await User.findOne({ email });
@@ -50,6 +50,7 @@ router.post(
         number,
         role,
         inTeam,
+        roleInTeam,
         images
       });
 

@@ -273,13 +273,13 @@ export default function About() {
         {/* Title */}
         <motion.h1
           variants={item}
-          className={`font-bold mb-8 text-center text-[var(--mainColor)] ${
+          className={`font-bold mb-8 text-center text-[var(--mainColor)] text-2xl ${
             isRTL ? "font-arabic" : ""
           } text-4xl sm:text-5xl md:text-6xl`}
         >
           {data[lang].title}
         </motion.h1>
-        <motion.p variants={item} className="text-start align-middle text-2xl mb-16 max-w-full
+        <motion.p variants={item} className="text-start align-middle sm:text-2xl mb-16 max-w-full text-xl
          text-[var(--secondColor)]">
          {data[lang].paragraph}
         </motion.p>
@@ -298,7 +298,7 @@ export default function About() {
 
             <ol type="1" className="list-decimal list-inside space-y-2">
               {data[lang].points.map((point, i) => (
-                <li className="text-2xl" key={i}>{point}</li>
+                <li className="text-xl sm:text-2xl" key={i}>{point}</li>
               ))}
             </ol>
           </motion.div>

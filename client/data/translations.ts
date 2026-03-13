@@ -15,6 +15,7 @@ export interface NavbarTranslations {
   albania: string;
   cars: string;
   hotel: string;
+  cruisies: string;
   contact: string;
 }
 
@@ -58,6 +59,7 @@ export const translations: Record<Language, Translations> = {
       albania: "Albania",
       cars: "Cars",
       hotel: "Hotel",
+      cruisies: "cruisies",
       contact: "Contact",
     },
     home: {
@@ -96,6 +98,7 @@ export const translations: Record<Language, Translations> = {
       albania: "ألبانيا",
       cars: "سيارات",
       hotel: "فنادق",
+      cruisies: "الجوالات المائيه",
       contact: "اتصل بنا",
     },
     home: {

@@ -262,7 +262,12 @@ export const api = {
     addImages: (id: string, files: FormData) =>
       apiClient.post(`/cruisies/${id}/images`, files, {
         headers: { "Content-Type": "multipart/form-data" }
-      })
+      }),
+    book: (data: { userEmail: string; userName: string; userNumber: string; message: string; cruisiesId: string }) =>
+      apiClient.post("/cruisies/book", data),
+    getAllBooked: () => apiClient.get("/cruisies/book"),
+    deleteBooked: (id: string) => apiClient.delete(`/cruisies/book/${id}`),
+    changeStatusBooked: (id: string, status: string) => apiClient.put(`/cruisies/book/${id}/status`, { status })
   },
 
   /**
