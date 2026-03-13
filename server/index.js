@@ -125,50 +125,50 @@ app.get("/health/db", (req, res) => {
 
 /**
  * Authentication Routes
- * POST   /auth/register  - Register new user
- * POST   /auth/login     - Login and get JWT
- * GET    /auth/me        - Get current user (protected)
+ * POST   /api/auth/register  - Register new user
+ * POST   /api/auth/login     - Login and get JWT
+ * GET    /api/auth/me        - Get current user (protected)
  */
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 /**
  * Category Routes
- * GET    /categories       - Get all (public)
- * GET    /categories/:id   - Get one (public)
- * POST   /categories       - Create (admin only)
- * PUT    /categories/:id   - Update (admin only)
- * DELETE /categories/:id   - Delete (admin only)
+ * GET    /api/categories       - Get all (public)
+ * GET    /api/categories/:id   - Get one (public)
+ * POST   /api/categories       - Create (admin only)
+ * PUT    /api/categories/:id   - Update (admin only)
+ * DELETE /api/categories/:id   - Delete (admin only)
  */
-app.use("/categories", categoryRoutes);
+app.use("/api/categories", categoryRoutes);
 
 /**
  * Program Routes
- * GET    /programs       - Get all (public)
- * GET    /programs/:id   - Get one (public)
- * POST   /programs       - Create (admin only)
- * PUT    /programs/:id   - Update (admin only)
- * DELETE /programs/:id   - Delete (admin only)
+ * GET    /api/programs       - Get all (public)
+ * GET    /api/programs/:id   - Get one (public)
+ * POST   /api/programs       - Create (admin only)
+ * PUT    /api/programs/:id   - Update (admin only)
+ * DELETE /api/programs/:id   - Delete (admin only)
  */
-app.use("/programs", programRoutes);
+app.use("/api/programs", programRoutes);
 
-app.use("/countries", countryRoutes);
+app.use("/api/countries", countryRoutes);
 
 /**
  * Visa Routes
- * POST   /visa           - Submit visa application (public)
- * GET    /visa           - Get all applications (admin only)
- * GET    /visa/:id       - Get one application (public/admin)
- * GET    /visa/status/:id - Track application status (public)
- * PUT    /visa/:id       - Update application (admin only)
- * DELETE /visa/:id       - Delete application (admin only)
+ * POST   /api/visa           - Submit visa application (public)
+ * GET    /api/visa           - Get all applications (admin only)
+ * GET    /api/visa/:id       - Get one application (public/admin)
+ * GET    /api/visa/status/:id - Track application status (public)
+ * PUT    /api/visa/:id       - Update application (admin only)
+ * DELETE /api/visa/:id       - Delete application (admin only)
  */
 
-app.use("/hotelBooking", hotelRoute);
-app.use("/visa", visaRoutes);
-app.use("/flights", flightRoutes);
-app.use("/carTrip", carTripsRoutes);
-app.use("/users", userRoutes);
-app.use("/cruisies", cruiseRoutes);
+app.use("/api/hotelBooking", hotelRoute);
+app.use("/api/visa", visaRoutes);
+app.use("/api/flights", flightRoutes);
+app.use("/api/carTrip", carTripsRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/cruisies", cruiseRoutes);
 // ============================================
 // 📊 STATS ENDPOINT (PUBLIC)
 // ============================================
