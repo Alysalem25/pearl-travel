@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app/server
+
+# Copy package files
+COPY server/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy the rest of the application
+COPY server/ .
+
+# Create uploads directory
+RUN mkdir -p uploads/categories uploads/countries uploads/Cruisies uploads/programs uploads/users
+
+EXPOSE 5000
+
+CMD ["npm", "start"]
